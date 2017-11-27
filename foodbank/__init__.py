@@ -32,10 +32,22 @@ login_manager.login_view = 'login'
 # ------------------- Models -----------------------
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(15), unique=True)
     email = db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(80))
+    password = db.Column(db.String(20))
+    name = db.Column(db.String(50))
+    address = db.Column(db.String(50))
+    zip_code = db.Column(db.String(50))
+    city = db.Column(db.String(50))
+    state = db.Column(db.String(50))
+    country = db.Column(db.String(50))
+    phone = db.Column(db.String(50))
+    description = db.Column(db.String(50))
+    # organization_type = db.Column(db.String(50))
     user_type = db.Column(db.Integer)
+    # pick_up_method = db.Column(db.String(50))
+    # population = db.Column(db.String(50))
+    # total_capacity = db.Column(db.String(50))
+    # current_inventory = db.Column(db.String(50))
 
 class RequestHeader(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -93,13 +105,13 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         if user:
             if check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember.data)
                 return redirect(url_for('dashboard'))
 
-        return '<h1>Invalid username or password</h1>'
+        return '<h1>Invalid email or password</h1>'
         #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
 
     return render_template('login.html', form=form)
@@ -109,27 +121,33 @@ def signup_donor():
     form = RegisterDonorForm()
 
     if form.validate_on_submit():
-        username_exists = db.session.query(User.id).filter_by(username=form.username.data).scalar() is not None
         email_exists = db.session.query(User.id).filter_by(email=form.email.data).scalar() is not None
 
-        if username_exists or email_exists:
-        	return 'Username or Email already existed!'
+        if email_exists:
+            return 'Email address already existed!'
         else:
-        	hashed_password = generate_password_hash(form.password.data, method='sha256')
-        	new_user = User(
-        		username=form.username.data, 
-        		email=form.email.data, 
-        		password=hashed_password,
-        		user_type=TYPE_DONOR)
+            hashed_password = generate_password_hash(form.password.data, method='sha256')
+            new_user = User(
+                email = form.email.data, 
+                password = hashed_password,
+                name = form.name.data,
+                address = form.address.data,
+                zip_code = form.zip_code.data,
+                city = form.city.data,
+                state = form.state.data,
+                country = form.country.data,
+                phone = form.phone.data,
+                description = form.description.data,
+                user_type = TYPE_DONOR)
 
-        	# add new user to the database
-        	db.session.add(new_user)
-        	db.session.commit()
+            # add new user to the database
+            db.session.add(new_user)
+            db.session.commit()
 
-        	flash('You have been signed up as a Donor!')
-        	# redirect to the login page
-        	return redirect(url_for('login'))
-        	#return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+            flash('You have been signed up as a Donor!')
+            # redirect to the login page
+            return redirect(url_for('login'))
+            #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
     return render_template('signup_donor.html', form=form)
 
@@ -138,26 +156,32 @@ def signup_consumer():
     form = RegisterConsumerForm()
 
     if form.validate_on_submit():
-        username_exists = db.session.query(User.id).filter_by(username=form.username.data).scalar() is not None
         email_exists = db.session.query(User.id).filter_by(email=form.email.data).scalar() is not None
 
-        if username_exists or email_exists:
-        	return 'Username or Email already existed!'
+        if email_exists:
+            return 'Email address already existed!'
         else:
-        	hashed_password = generate_password_hash(form.password.data, method='sha256')
-        	new_user = User(
-        		username=form.username.data, 
-        		email=form.email.data, 
-        		password=hashed_password,
-        		user_type=TYPE_CONSUMER)
-        	# add new user to the database
-        	db.session.add(new_user)
-        	db.session.commit()
+            hashed_password = generate_password_hash(form.password.data, method='sha256')
+            new_user = User(
+                email = form.email.data, 
+                password = hashed_password,
+                name = form.name.data,
+                address = form.address.data,
+                zip_code = form.zip_code.data,
+                city = form.city.data,
+                state = form.state.data,
+                country = form.country.data,
+                phone = form.phone.data,
+                description = form.description.data,
+                user_type = TYPE_CONSUMER)
+            # add new user to the database
+            db.session.add(new_user)
+            db.session.commit()
 
-        	flash('You have been signed up as a Consumer!')
-        	# redirect to the login page
-        	return redirect(url_for('login'))
-        	#return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+            flash('You have been signed up as a Consumer!')
+            # redirect to the login page
+            return redirect(url_for('login'))
+            #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
     return render_template('signup_consumer.html', form=form)
 
@@ -166,28 +190,32 @@ def signup_foodbank():
     form = RegisterFoodbankForm()
 
     if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data, method='sha256')
-        new_user = User(
-        	username=form.username.data, 
-        	email=form.email.data, 
-        	password=hashed_password,
-        	user_type=TYPE_FOODBANK)
-
-        username_exists = db.session.query(User.id).filter_by(username=form.username.data).scalar() is not None
         email_exists = db.session.query(User.id).filter_by(email=form.email.data).scalar() is not None
 
-        if username_exists or email_exists:
-        	return 'Username or Email already existed!'
+        if email_exists:
+            return 'Email address already existed!'
         else:
-        	# add new user to the database
-        	db.session.add(new_user)
-        	db.session.commit()
+            hashed_password = generate_password_hash(form.password.data, method='sha256')
+            new_user = User(
+                email = form.email.data, 
+                password = hashed_password,
+                name = form.name.data,
+                address = form.address.data,
+                zip_code = form.zip_code.data,
+                city = form.city.data,
+                state = form.state.data,
+                country = form.country.data,
+                phone = form.phone.data,
+                description = form.description.data,
+                user_type = TYPE_FOODBANK)
+            # add new user to the database
+            db.session.add(new_user)
+            db.session.commit()
 
-        	flash('You have been signed up as a Foodbank!')
-        	# redirect to the login page
-        	return redirect(url_for('login'))
-        	#return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
-
+            flash('You have been signed up as a Foodbank!')
+            # redirect to the login page
+            return redirect(url_for('login'))
+            #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
     return render_template('signup_foodbank.html', form=form)
 
@@ -207,7 +235,6 @@ def donate():
 
         )
         return 'You have successfully submitted a donation request!'
-    #new form or form did not successfully submitted
 
     return render_template('donate_request.html', form=form, user=current_user)
 
@@ -222,8 +249,8 @@ def dashboard():
     elif current_user.user_type == TYPE_CONSUMER:
         return render_template('dashboard_consumer.html', user=current_user)
     else:
-    	# direct the user to the index page if something wrong happened
-		return index()
+        # direct the user to the index page if something wrong happened
+        return index()
 
 @app.route('/logout')
 @login_required
