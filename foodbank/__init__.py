@@ -195,10 +195,20 @@ def signup_foodbank():
 @app.route('/donate', methods=['GET', 'POST'])
 @login_required
 def donate():
-    form = DonateForm()
+    selection_foodbanks = [('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')]
+    form = DonateForm(selection_foodbanks=selection_foodbanks)
     if form.validate_on_submit():#post successfully
+        # insert the donation request into database
+        new_request_header = RequestHeader(
+            from_user=current_user.id,
+            to_user=form.donate_to,
+            appointment_date=form.appointment_date,
+            appointment_time=form.appointment_time,
+
+        )
         return 'You have successfully submitted a donation request!'
     #new form or form did not successfully submitted
+
     return render_template('donate_request.html', form=form, user=current_user)
 
 

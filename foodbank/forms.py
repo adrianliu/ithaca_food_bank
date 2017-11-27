@@ -28,10 +28,15 @@ class RegisterFoodbankForm(FlaskForm):
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 
 class DonateForm(FlaskForm):
-    donate_to = SelectField('Donate to: ', choices = [('foodbank1', 'foodbank1'), ('foodbank2', 'foodbank2')])
+    donate_to = SelectField('Donate to: ')
     beneficiary = TextField("Perferred beneficiary (Optional): ")
-    frequency = SelectField('Frequency: ', choices = [('1','One Time'), ('2','Weekly'), ('3','Monthly')])
     appointment_date = TextField('Appointment Date: ')
+    appointment_time = StringField('Appointment Time: ')
+    frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
     notes = TextAreaField("Do you have anything specific for this donation?")
     submit = SubmitField('Make a Donation')
+    def __init__(self, selection_foodbanks):
+        super(DonateForm, self).__init__()
+        self.donate_to.choices = selection_foodbanks
+
 
