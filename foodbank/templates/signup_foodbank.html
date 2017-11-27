@@ -16,9 +16,16 @@ Register as Foodbank
   <form class="form-signin" method="POST" action="/signup/foodbank">
     <h2 class="form-signin-heading">Sign Up</h2>
     {{ form.hidden_tag() }}
-    {{ wtf.form_field(form.username) }}
     {{ wtf.form_field(form.email) }}
     {{ wtf.form_field(form.password) }}
+    {{ wtf.form_field(form.name) }}
+    {{ wtf.form_field(form.address) }}
+    {{ wtf.form_field(form.zip_code) }}
+    {{ wtf.form_field(form.city) }}
+    {{ wtf.form_field(form.state) }}
+    {{ wtf.form_field(form.country) }}
+    {{ wtf.form_field(form.phone) }}
+    {{ wtf.form_field(form.description) }}
     <button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up as Foodbank</button>
   </form>
 
