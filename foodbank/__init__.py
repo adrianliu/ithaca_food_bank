@@ -196,9 +196,9 @@ def signup_foodbank():
 @login_required
 def donate():
     form = DonateForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit():#post successfully
         return 'You have successfully submitted a donation request!'
-
+    #new form or form did not successfully submitted
     return render_template('donate_request.html', form=form, user=current_user)
 
 

@@ -1,2 +1,39 @@
 TO DO:
 1. Make nav bar show on every page, thus users can always go back to home page by clicking the links on nav bar.
+
+Instructions:
+What to do if you changed database schema?
+1. $ cd <Project-Root-Folder>
+2. $ python
+3. $ from foodbank import db
+4. $ db.drop_all()
+5. $ db.create_all()
+6. $ exit()
+7. $ cd foodbank
+8. $ sqlite3 database.db
+9. sqlite> .tables
+
+What to do if you want to add a field in a form? Take RegisterDonorForm as an example.
+1. Go to forms.py file, and find class RegisterDonorForm
+2. add a field like this: beneficiary = TextField("Perferred beneficiary (Optional): ")
+   (Note: this is equivalent to add an input text field, you can also add other fields like SelectField, BooleanField etc,
+    check WTForms for more details)
+3. In the corresponding html file, you have two ways to do show your fields.
+   One way is to simply use {{ wtf.quick_form(form) }}, another way is to manually add the fields like this:
+   {{ wtf.form_field(form.username) }}
+   {{ wtf.form_field(form.password) }}
+   {{ wtf.form_field(form.remember) }}
+4. WTForms automatically takes care of generating the form for you.
+
+How to add a table in database?
+1. Go to __init__.py file
+2. Find the section for Models
+3. Create a class like this:
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15), unique=True)
+    email = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(80))
+    user_type = db.Column(db.Integer)
+4. Go to instructions for "What to do if you changed database schema?" and follow the steps.
+
