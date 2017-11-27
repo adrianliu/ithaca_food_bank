@@ -1,11 +1,22 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, flash
 import os
 
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm
+
+
+TYPE_FOODBANK = 0
+TYPE_DONOR = 1
+TYPR_CONSUMER = 2
+
+REQUEST_DONATION = 1
+REQUEST_CONSUMPTION = 2
+
+REQUEST_PENDING = 0
+REQUEST_APPROVED = 1
 
 # App instance
 app = Flask(__name__)
@@ -23,6 +34,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(15), unique=True)
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(80))
+    user_type = db.Column(db.Integer)
 
 @app.errorhandler(404)
 def not_found(error):
@@ -57,48 +69,90 @@ def login():
 
 @app.route('/signup/donor', methods=['GET', 'POST'])
 def signup_donor():
-    form = RegisterForm()
+    form = RegisterDonorForm()
 
     if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data, method='sha256')
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
+        username_exists = db.session.query(User.id).filter_by(username=form.username.data).scalar() is not None
+        email_exists = db.session.query(User.id).filter_by(email=form.email.data).scalar() is not None
 
-        return '<h1>New user has been created!</h1>'
-        #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+        if username_exists or email_exists:
+        	return 'Username or Email already existed!'
+        else:
+        	hashed_password = generate_password_hash(form.password.data, method='sha256')
+        	new_user = User(
+        		username=form.username.data, 
+        		email=form.email.data, 
+        		password=hashed_password,
+        		user_type=TYPE_DONOR)
 
-    return render_template('signup.html', form=form)
+        	# add new user to the database
+        	db.session.add(new_user)
+        	db.session.commit()
+
+        	flash('New user has been created!')
+        	# redirect to the login page
+        	return redirect(url_for('login'))
+        	#return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+
+    return render_template('signup_donor.html', form=form)
 
 @app.route('/signup/consumer', methods=['GET', 'POST'])
 def signup_consumer():
-    form = RegisterForm()
+    form = RegisterConsumerForm()
 
     if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data, method='sha256')
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
+        username_exists = db.session.query(User.id).filter_by(username=form.username.data).scalar() is not None
+        email_exists = db.session.query(User.id).filter_by(email=form.email.data).scalar() is not None
 
-        return '<h1>New user has been created!</h1>'
-        #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+        if username_exists or email_exists:
+        	return 'Username or Email already existed!'
+        else:
+        	hashed_password = generate_password_hash(form.password.data, method='sha256')
+        	new_user = User(
+        		username=form.username.data, 
+        		email=form.email.data, 
+        		password=hashed_password,
+        		user_type=TYPR_CONSUMER)
+        	# add new user to the database
+        	db.session.add(new_user)
+        	db.session.commit()
 
-    return render_template('signup.html', form=form)
+        	flash('New user has been created!')
+        	# redirect to the login page
+        	return redirect(url_for('login'))
+        	#return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+
+    return render_template('signup_consumer.html', form=form)
 
 @app.route('/signup/foodbank', methods=['GET', 'POST'])
 def signup_foodbank():
-    form = RegisterForm()
-
+    form = RegisterFoodbankForm()
+    
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
+        new_user = User(
+        	username=form.username.data, 
+        	email=form.email.data, 
+        	password=hashed_password,
+        	user_type=TYPE_FOODBANK)
 
-        return '<h1>New user has been created!</h1>'
-        #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+        username_exists = db.session.query(User.id).filter_by(username=form.username.data).scalar() is not None
+        email_exists = db.session.query(User.id).filter_by(email=form.email.data).scalar() is not None
 
-    return render_template('signup.html', form=form)
+        if username_exists or email_exists:
+        	return 'Username or Email already existed!'
+        else:
+        	# add new user to the database
+        	db.session.add(new_user)
+        	db.session.commit()
+
+        	flash('New user has been created!')
+        	# redirect to the login page
+        	return redirect(url_for('login'))
+        	#return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+
+
+    return render_template('signup_foodbank.html', form=form)
 
 
 
