@@ -25,7 +25,17 @@ Demo App
           <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Sign Up
+              <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="{{ url_for('signup_donor') }}">Register as Donor</a></li>
+                  <li><a href="{{ url_for('signup_consumer') }}">Register as Consumer</a></li>
+                  <li><a href="{{ url_for('signup_foodbank') }}">Register as Foodbank</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
