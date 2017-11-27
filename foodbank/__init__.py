@@ -89,7 +89,7 @@ def signup_donor():
         	db.session.add(new_user)
         	db.session.commit()
 
-        	flash('New user has been created!')
+        	flash('You have been signed up as a Donor!')
         	# redirect to the login page
         	return redirect(url_for('login'))
         	#return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
@@ -117,7 +117,7 @@ def signup_consumer():
         	db.session.add(new_user)
         	db.session.commit()
 
-        	flash('New user has been created!')
+        	flash('You have been signed up as a Consumer!')
         	# redirect to the login page
         	return redirect(url_for('login'))
         	#return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
@@ -127,7 +127,7 @@ def signup_consumer():
 @app.route('/signup/foodbank', methods=['GET', 'POST'])
 def signup_foodbank():
     form = RegisterFoodbankForm()
-    
+
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         new_user = User(
@@ -146,7 +146,7 @@ def signup_foodbank():
         	db.session.add(new_user)
         	db.session.commit()
 
-        	flash('New user has been created!')
+        	flash('You have been signed up as a Foodbank!')
         	# redirect to the login page
         	return redirect(url_for('login'))
         	#return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
