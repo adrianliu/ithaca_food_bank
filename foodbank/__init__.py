@@ -6,6 +6,7 @@ from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm
+from datetime import datetime
 
 
 TYPE_FOODBANK = 0
@@ -35,6 +36,42 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(80))
     user_type = db.Column(db.Integer)
+
+class RequestHeader(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    form_user = db.Column(db.Integer) #reference to User(id)
+    to_user = db.Column(db.Integer) #reference to User(id)
+    appointment_date = db.Column(db.String(50))
+    appointment_time = db.Column(db.String(50))
+    request_type = db.Column(db.Integer) # either donation request or claim request
+    beneficiary = db.Column(db.String(50))
+    frequency = db.Column(db.Integer) # 1: One Time; 2. Weekly; 3. Monthly
+    notes = db.Column(db.String(500))
+    status = db.Column(db.Integer) # 0: pending; 1: approved
+    creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class RequestDetail(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    request_header_id = db.Column(db.Integer) # reference to RequestHeader(id)
+    food_item_id = db.Column(db.Integer) # reference to FoodItem(id)
+    category_id = db.Column(db.Integer) # reference to Category(id)
+    quantity = db.Column(db.String(50))
+    weight = db.Column(db.String(50))
+    expiration_date = db.Column(db.String(50))
+    creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class FoodItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category_id = db.Column(db.Integer) #reference to Category(id)
+    name = db.Column(db.String(50))
+    description = db.Column(db.String(500))
+    creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    description = db.Column(db.String(500))
+    creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 @app.errorhandler(404)
 def not_found(error):
