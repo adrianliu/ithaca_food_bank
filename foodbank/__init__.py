@@ -5,12 +5,12 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm
+from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm
 
 
 TYPE_FOODBANK = 0
 TYPE_DONOR = 1
-TYPR_CONSUMER = 2
+TYPE_CONSUMER = 2
 
 REQUEST_DONATION = 1
 REQUEST_CONSUMPTION = 2
@@ -112,7 +112,7 @@ def signup_consumer():
         		username=form.username.data, 
         		email=form.email.data, 
         		password=hashed_password,
-        		user_type=TYPR_CONSUMER)
+        		user_type=TYPE_CONSUMER)
         	# add new user to the database
         	db.session.add(new_user)
         	db.session.commit()
@@ -154,12 +154,29 @@ def signup_foodbank():
 
     return render_template('signup_foodbank.html', form=form)
 
+# For donors to make a donation
+@app.route('/donate', methods=['GET', 'POST'])
+@login_required
+def donate():
+    form = DonateForm()
+    if form.validate_on_submit():
+        return 'You have successfully submitted a donation request!'
+
+    return render_template('donate_request.html', form=form, user=current_user)
 
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', name=current_user.username)
+    if current_user.user_type == TYPE_FOODBANK:
+        return render_template('dashboard_foodbank.html', user=current_user)
+    elif current_user.user_type == TYPE_DONOR:
+        return render_template('dashboard_donor.html', user=current_user)
+    elif current_user.user_type == TYPE_CONSUMER:
+        return render_template('dashboard_consumer.html', user=current_user)
+    else:
+    	# direct the user to the index page if something wrong happened
+		return index()
 
 @app.route('/logout')
 @login_required
