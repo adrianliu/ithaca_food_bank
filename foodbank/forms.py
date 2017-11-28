@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm 
-from wtforms import StringField, PasswordField, BooleanField, SelectField, TextField, TextAreaField, SubmitField
+from wtforms import StringField, DateField, PasswordField, BooleanField, SelectField, TextField, TextAreaField, SubmitField
 from wtforms.validators import InputRequired, Email, Length
 
 #TODO: do some research on WTForms-Components: https://wtforms-components.readthedocs.io/en/latest/#
@@ -51,7 +51,7 @@ class RegisterFoodbankForm(FlaskForm):
 class DonateForm(FlaskForm):
     donate_to = SelectField('Donate to: ')
     beneficiary = TextField("Perferred beneficiary (Optional): ")
-    appointment_date = TextField('Appointment Date: ')
+    appointment_date = DateField('Appointment Date: ', format="%m/%d/%Y")
     appointment_time = StringField('Appointment Time: ')
     frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
     notes = TextAreaField("Do you have anything specific for this donation?")
