@@ -51,7 +51,7 @@ class User(UserMixin, db.Model):
 
 class RequestHeader(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    form_user = db.Column(db.Integer) #reference to User(id)
+    from_user = db.Column(db.Integer) #reference to User(id)
     to_user = db.Column(db.Integer) #reference to User(id)
     appointment_date = db.Column(db.String(50))
     appointment_time = db.Column(db.String(50))
@@ -223,21 +223,30 @@ def signup_foodbank():
 @app.route('/donate', methods=['GET', 'POST'])
 @login_required
 def donate():
-    selection_foodbanks = [('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')]
-    form = DonateForm(selection_foodbanks=selection_foodbanks)
+    selection_foodbanks = db.session.query(User.id, User.name).filter_by(user_type = TYPE_FOODBANK).all()
+    foodbank_choices = []
+    for key, value in selection_foodbanks:
+        foodbank_choices.append((str(key), value))
+    selection_categories = db.session.query(Category.id, Category.name).all()
+    form = DonateForm(selection_foodbanks=foodbank_choices)
+    # form = DonateForm()
     if form.validate_on_submit():#post successfully
         # insert the donation request into database
         new_request_header = RequestHeader(
-            from_user=current_user.id,
-            to_user=form.donate_to,
-            appointment_date=form.appointment_date,
-            appointment_time=form.appointment_time,
-
-        )
+            from_user = current_user.id,
+            to_user = int(form.donate_to.data),
+            appointment_date = form.appointment_date.data,
+            appointment_time = form.appointment_time.data,
+            request_type = REQUEST_DONATION,
+            beneficiary = form.beneficiary.data,
+            frequency = form.frequency.data,
+            notes = form.notes.data,
+            status = REQUEST_PENDING)
+        db.session.add(new_request_header)
+        db.session.commit()
         return 'You have successfully submitted a donation request!'
 
     return render_template('donate_request.html', form=form, user=current_user)
-
 
 @app.route('/dashboard')
 @login_required

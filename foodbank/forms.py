@@ -1,5 +1,8 @@
+from datetime import datetime, date
+from flask.ext.admin.form.widgets import DatePickerWidget
 from flask_wtf import FlaskForm 
 from wtforms import StringField, PasswordField, BooleanField, SelectField, TextField, TextAreaField, SubmitField
+from wtforms.fields.html5 import DateField
 from wtforms.validators import InputRequired, Email, Length
 
 #TODO: do some research on WTForms-Components: https://wtforms-components.readthedocs.io/en/latest/#
@@ -52,7 +55,7 @@ class DonateForm(FlaskForm):
     donate_to = SelectField('Donate to: ')
     beneficiary = TextField("Perferred beneficiary (Optional): ")
     appointment_date = TextField('Appointment Date: ')
-    appointment_time = StringField('Appointment Time: ')
+    appointment_time = TextField('Appointment Time: ')
     frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
     notes = TextAreaField("Do you have anything specific for this donation?")
     submit = SubmitField('Make a Donation')
