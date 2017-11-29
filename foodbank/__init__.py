@@ -256,17 +256,18 @@ def signup_foodbank():
 @app.route('/donate', methods=['GET', 'POST'])
 @login_required
 def donate():
-    selection_foodbanks = db.session.query(User.id, User.name).filter_by(user_type = TYPE_FOODBANK).all()
-    foodbank_choices = []
-    for key, value in selection_foodbanks:
-        foodbank_choices.append((str(key), value))
+    foodbanks = db.session.query(User.id, User.name).filter_by(user_type = TYPE_FOODBANK).all()
+
     categories = db.session.query(Category).all()
-    selection_categories = db.session.query(Category.id, Category.name).all()
+    categories = Category.query.all()
     # load all of the category->food mapping to memory
-    # category_food_dict = {}
-    # for category_id, category_name in selection_categories:
-    #     food_items = db.session.query(Category.id, Category.name).all()
-    form = DonateForm(selection_foodbanks=foodbank_choices)
+    category_food_dict = {}
+    for category in categories:
+        food_items = category.food_items.all()
+        category_food_dict[str(category.id)] = food_items
+    print '------------category_food_dict----------------'
+    print category_food_dict
+    form = DonateForm(foodbank_choices=foodbanks)
     # form = DonateForm()
     if form.validate_on_submit():#post successfully
         # insert the donation request into database

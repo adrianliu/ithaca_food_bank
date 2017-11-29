@@ -50,16 +50,16 @@ class RegisterFoodbankForm(FlaskForm):
     description = StringField('description')
 
 class DonateForm(FlaskForm):
-    donate_to = SelectField('Donate to: ')
+    donate_to = SelectField('Donate to: ', coerce=int)
     beneficiary = TextField("Perferred beneficiary (Optional): ")
     appointment_date = DateField('Appointment Date: ')
     appointment_time = TimeField('Appointment Time: ')
     frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
     notes = TextAreaField("Do you have anything specific for this donation?")
     submit = SubmitField('Make a Donation')
-    def __init__(self, selection_foodbanks):
+    def __init__(self, foodbank_choices):
         super(DonateForm, self).__init__()
-        self.donate_to.choices = selection_foodbanks
+        self.donate_to.choices = foodbank_choices
 
 # Below is just for testing...
 class LocationForm(FlaskForm):

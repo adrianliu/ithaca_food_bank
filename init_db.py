@@ -1,8 +1,26 @@
-from foodbank import db, Category, FoodItem
+from foodbank import db, Category, FoodItem, User
+from werkzeug.security import generate_password_hash
 
 # recreate all of the db tables
 db.drop_all()
 db.create_all()
+
+# insert 2 donors, 2 consumers, 3 foodbanks
+pwd = generate_password_hash('12345678', method='sha256')
+user1 = User(email='donor1@gmail.com', password=pwd, name='donor1', user_type=1)
+user2 = User(email='donor2@gmail.com', password=pwd, name='donor2', user_type=1)
+user3 = User(email='consumer1@gmail.com', password=pwd, name='consumer1', user_type=2)
+user4 = User(email='consumer2@gmail.com', password=pwd, name='consumer2', user_type=2)
+user5 = User(email='fb1@gmail.com', password=pwd, name='fb1', user_type=0)
+user6 = User(email='fb2@gmail.com', password=pwd, name='fb2', user_type=0)
+db.session.add(user1)
+db.session.add(user2)
+db.session.add(user3)
+db.session.add(user4)
+db.session.add(user5)
+db.session.add(user6)
+db.session.commit()
+
 
 #insert 2 categories
 category_one = Category(name='Fruit',description='This is Fruit')
