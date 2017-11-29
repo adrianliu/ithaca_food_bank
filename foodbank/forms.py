@@ -1,7 +1,5 @@
-from datetime import datetime, date
-from flask.ext.admin.form.widgets import DatePickerWidget
-from flask_wtf import FlaskForm 
-from wtforms import StringField, PasswordField, BooleanField, SelectField, TextField, TextAreaField, SubmitField
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, BooleanField, SelectField, TextField, TextAreaField, SubmitField, FieldList, FormField
 from wtforms.validators import InputRequired, Email, Length
 from wtforms_components import DateField, TimeField
 
@@ -62,5 +60,16 @@ class DonateForm(FlaskForm):
     def __init__(self, selection_foodbanks):
         super(DonateForm, self).__init__()
         self.donate_to.choices = selection_foodbanks
+
+# Below is just for testing...
+class LocationForm(FlaskForm):
+    location_id = StringField('location_id')
+    city = StringField('city')
+class CompanyForm(FlaskForm):
+    company_name = StringField('company_name')
+    locations = FieldList(FormField(LocationForm), min_entries=2)
+    plus_button = SubmitField("+")
+    minus_button = SubmitField("-")
+
 
 

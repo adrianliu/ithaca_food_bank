@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, flash
 import os
+from flask import request
 
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy  import SQLAlchemy
@@ -7,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm
+from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm
 from datetime import datetime
 
 
@@ -306,4 +307,22 @@ def dashboard():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+
+    form = CompanyForm(request.form)
+    if form.plus_button.data:
+        form.locations.append_entry()
+    elif form.minus_button.data:
+        form.locations.pop_entry()
+    elif form.validate_on_submit():
+        print request.form['company_name']
+        print len(form.locations.entries)
+        for entry in form.locations.entries:
+            print entry.data['location_id']
+            print entry.data['city']
+        return 'test form submitted!'
+    print(form.errors)
+    return render_template('test_field_list.html', companyForm=form)
 
