@@ -109,7 +109,6 @@ class FoodItem(db.Model):
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    category = relationship("Category", foreign_keys=[category_id])
 
 class Category(db.Model):
     __tablename__ = 'category'
@@ -117,6 +116,7 @@ class Category(db.Model):
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    food_items = relationship('FoodItem', backref='category', lazy='dynamic')
 
 @app.errorhandler(404)
 def not_found(error):
@@ -260,7 +260,12 @@ def donate():
     foodbank_choices = []
     for key, value in selection_foodbanks:
         foodbank_choices.append((str(key), value))
+    categories = db.session.query(Category).all()
     selection_categories = db.session.query(Category.id, Category.name).all()
+    # load all of the category->food mapping to memory
+    # category_food_dict = {}
+    # for category_id, category_name in selection_categories:
+    #     food_items = db.session.query(Category.id, Category.name).all()
     form = DonateForm(selection_foodbanks=foodbank_choices)
     # form = DonateForm()
     if form.validate_on_submit():#post successfully
@@ -284,7 +289,9 @@ def donate():
 @app.route('/manage/donation', methods=['GET', 'POST'])
 @login_required
 def manage_donation():
-    donation_request = db.session.query(RequestHeader, User).filter_by(to_user = current_user.id, request_type = REQUEST_DONATION, status = REQUEST_PENDING).join(User, RequestHeader.from_user == User.id).all()
+    donation_request = db.session.query(RequestHeader, User)\
+        .filter_by(to_user = current_user.id, request_type = REQUEST_DONATION, status = REQUEST_PENDING)\
+        .join(User, RequestHeader.from_user == User.id).all()
     donation_transaction = db.session.query(TransactionHeader, User).filter_by(to_user = current_user.id, transaction_type = REQUEST_DONATION).join(User, TransactionHeader.from_user == User.id).all()
     return render_template('manage_donation.html', donation_request = donation_request, donation_transaction = donation_transaction)
 
