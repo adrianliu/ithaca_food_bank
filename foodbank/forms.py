@@ -71,6 +71,31 @@ class DonateForm(FlaskForm):
         super(DonateForm, self).__init__()
         self.donate_to.choices = foodbank_choices
 
+class ManageForm(FlaskForm):
+    beneficiary = TextField("Perferred beneficiary (Optional): ")
+    appointment_date = DateField('Appointment Date: ')
+    appointment_time = TimeField('Appointment Time: ')
+    frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
+    notes = TextAreaField("Do you have anything specific for this donation?")
+    food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
+    plus_button = SubmitField("+")
+    minus_button = SubmitField("-")
+    def __init__(self, donation_header, donation_detail):
+        super(ManageForm, self).__init__()
+        self.beneficiary.data = donation_header.beneficiary
+        # self.appointment_date.data = donation_header.appointment_date
+        self.appointment_time.data = donation_header.appointment_time
+        self.frequency.data = donation_header.frequency
+        self.notes.data = donation_header.notes
+        for x in range(1, len(donation_detail)):
+            self.food_items.append_entry()
+        for x in range(0, len(donation_detail)):
+            self.food_items.__getitem__(x).category.data = donation_detail[x].category_id
+            self.food_items.__getitem__(x).food_item.data = donation_detail[x].food_item_id
+            self.food_items.__getitem__(x).quantity.data = donation_detail[x].quantity
+            self.food_items.__getitem__(x).weight.data = donation_detail[x].weight
+            # self.food_items.__getitem__(x).expiration_date.data = donation_detail[x].expiration_date
+
 # Below is just for testing...
 class LocationForm(FlaskForm):
     location_id = StringField('location_id')

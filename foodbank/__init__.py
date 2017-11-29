@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm
+from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm, ManageForm
 from datetime import datetime
 
 
@@ -289,7 +289,7 @@ def donate():
 
         db.session.add(new_request_header)
         db.session.commit()
-        
+
         for entry in form.food_items.entries:
             new_request_detail = RequestDetail(
                 request_header_id=new_request_header.id,
@@ -319,9 +319,19 @@ def manage_donation():
 @app.route('/manage/donation/edit/<donation_id>', methods=['GET', 'POST'])
 @login_required
 def edit_donation(donation_id):
-    donation_header = db.session.query(RequestHeader).filter_by(id = donation_id).all()
-    donation_detail = db.session.query(RequestDetail).filter_by(request_header_id = donation_id).all()    
-    return render_template('edit_donation.html', donation_header = donation_header[0], donation_detail = donation_detail)
+    if donation_id == '0':
+        return "test"
+    else:
+        donation_header = db.session.query(RequestHeader).filter_by(id = donation_id).all()
+        donation_detail = db.session.query(RequestDetail).filter_by(request_header_id = donation_id).all()  
+        form = ManageForm(donation_header[0], donation_detail)
+        if form.plus_button.data:
+            form.food_items.append_entry()
+        elif form.minus_button.data:
+            form.food_items.pop_entry()
+        elif form.validate_on_submit():
+            pass
+        return render_template('edit_donation.html', donateForm = form)   
 
 @app.route('/dashboard')
 @login_required
@@ -344,7 +354,6 @@ def logout():
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-
     form = CompanyForm(request.form)
     if form.plus_button.data:
         form.locations.append_entry()
@@ -359,4 +368,3 @@ def test():
         return 'test form submitted!'
     print(form.errors)
     return render_template('test_field_list.html', companyForm=form)
-
