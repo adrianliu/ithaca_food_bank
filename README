@@ -4,14 +4,10 @@ TO DO:
 Instructions:
 What to do if you changed database schema?
 1. $ cd <Project-Root-Folder>
-2. $ python
-3. $ from foodbank import db
-4. $ db.drop_all()
-5. $ db.create_all()
-6. $ exit()
-7. $ cd foodbank
-8. $ sqlite3 database.db
-9. sqlite> .tables
+2. $ python init_db.py #Feel free to add more seeding data when needed
+3. $ cd foodbank
+4. $ sqlite3 database.db
+5. sqlite> .tables
 
 What to do if you want to add a field in a form? Take RegisterDonorForm as an example.
 1. Go to forms.py file, and find class RegisterDonorForm
