@@ -7,7 +7,7 @@ from wtforms_components import DateField, TimeField
 
 class LoginForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
-    password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=20)])
+    password = PasswordField('password', validators=[InputRequired(), Length(min=1, max=20)])
     remember = BooleanField('remember me')
 
 class RegisterDonorForm(FlaskForm):

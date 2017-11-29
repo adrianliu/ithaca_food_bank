@@ -6,7 +6,7 @@ db.drop_all()
 db.create_all()
 
 # insert 2 donors, 2 consumers, 3 foodbanks
-pwd = generate_password_hash('12345678', method='sha256')
+pwd = generate_password_hash('1', method='sha256')
 user1 = User(email='donor1@gmail.com', password=pwd, name='donor1', user_type=1)
 user2 = User(email='donor2@gmail.com', password=pwd, name='donor2', user_type=1)
 user3 = User(email='consumer1@gmail.com', password=pwd, name='consumer1', user_type=2)
