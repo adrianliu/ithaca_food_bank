@@ -283,7 +283,8 @@ def donate():
             status = REQUEST_PENDING)
         db.session.add(new_request_header)
         db.session.commit()
-        return 'You have successfully submitted a donation request!'
+        flash("You have successfully submitted a donation request!")
+        return redirect(url_for('dashboard'))
 
     return render_template('donate_request.html', form=form, user=current_user)
 
@@ -300,7 +301,8 @@ def manage_donation():
 @login_required
 def edit_donation(donation_id):
     donation_header = db.session.query(RequestHeader).filter_by(id = donation_id).all()
-    return render_template('edit_donation.html', header = donation_header[0])
+    donation_detail = db.session.query(RequestDetail).filter_by(request_header_id = donation_id).all()    
+    return render_template('edit_donation.html', donation_header = donation_header[0], donation_detail = donation_detail)
 
 @app.route('/dashboard')
 @login_required
