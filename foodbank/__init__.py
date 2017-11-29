@@ -3,6 +3,8 @@ import os
 
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy  import SQLAlchemy
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm
@@ -31,6 +33,7 @@ login_manager.login_view = 'login'
 
 # ------------------- Models -----------------------
 class User(UserMixin, db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(20))
@@ -50,11 +53,12 @@ class User(UserMixin, db.Model):
     # current_inventory = db.Column(db.String(50))
 
 class RequestHeader(db.Model):
+    __tablename__ = 'request_header'
     id = db.Column(db.Integer, primary_key=True)
-    from_user = db.Column(db.Integer) #reference to User(id)
-    to_user = db.Column(db.Integer) #reference to User(id)
-    appointment_date = db.Column(db.String(50))
-    appointment_time = db.Column(db.String(50))
+    from_user = db.Column(db.Integer, ForeignKey("user.id")) #reference to User(id)
+    to_user = db.Column(db.Integer, ForeignKey("user.id")) #reference to User(id)
+    appointment_date = db.Column(db.Date)
+    appointment_time = db.Column(db.Time)
     request_type = db.Column(db.Integer) # either donation request or claim request
     beneficiary = db.Column(db.String(50))
     frequency = db.Column(db.Integer) # 1: One Time; 2. Weekly; 3. Monthly
@@ -63,23 +67,50 @@ class RequestHeader(db.Model):
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 class RequestDetail(db.Model):
+    __tablename__ = 'request_detail'
     id = db.Column(db.Integer, primary_key=True)
-    request_header_id = db.Column(db.Integer) # reference to RequestHeader(id)
-    food_item_id = db.Column(db.Integer) # reference to FoodItem(id)
-    category_id = db.Column(db.Integer) # reference to Category(id)
+    request_header_id = db.Column(db.Integer, ForeignKey("request_detail.id")) # reference to RequestHeader(id)
+    food_item_id = db.Column(db.Integer, ForeignKey("food_item.id")) # reference to FoodItem(id)
+    category_id = db.Column(db.Integer, ForeignKey("category.id")) # reference to Category(id)
+    quantity = db.Column(db.String(50))
+    weight = db.Column(db.String(50))
+    expiration_date = db.Column(db.String(50))
+    creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class TransactionHeader(db.Model):
+    __tablename__ = 'transaction_header'
+    id = db.Column(db.Integer, primary_key=True)
+    from_user = db.Column(db.Integer, ForeignKey("user.id")) #reference to User(id)
+    to_user = db.Column(db.Integer, ForeignKey("user.id")) #reference to User(id)
+    appointment_date = db.Column(db.Date)
+    appointment_time = db.Column(db.Time)
+    transaction_type = db.Column(db.Integer) # either donation transaction or claim transaction
+    beneficiary = db.Column(db.String(50))
+    frequency = db.Column(db.Integer) # 1: One Time; 2. Weekly; 3. Monthly
+    notes = db.Column(db.String(500))
+    creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class TransactionDetail(db.Model):
+    __tablename__ = 'transaction_detail'
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_header_id = db.Column(db.Integer, ForeignKey("transaction_header.id")) # reference to RequestHeader(id)
+    food_item_id = db.Column(db.Integer, ForeignKey("food_item.id")) # reference to FoodItem(id)
+    category_id = db.Column(db.Integer, ForeignKey("category.id")) # reference to Category(id)
     quantity = db.Column(db.String(50))
     weight = db.Column(db.String(50))
     expiration_date = db.Column(db.String(50))
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 class FoodItem(db.Model):
+    __tablename__ = 'food_item'
     id = db.Column(db.Integer, primary_key=True)
-    category_id = db.Column(db.Integer) #reference to Category(id)
+    category_id = db.Column(db.Integer, ForeignKey("category.id")) #reference to Category(id)
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 class Category(db.Model):
+    __tablename__ = 'category'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
@@ -247,6 +278,15 @@ def donate():
         return 'You have successfully submitted a donation request!'
 
     return render_template('donate_request.html', form=form, user=current_user)
+
+# For donors to make a donation
+@app.route('/manage/donation', methods=['GET', 'POST'])
+@login_required
+def manage_donation():
+    donation_request = db.session.query(RequestHeader, User).filter_by(id = current_user.id, request_type = REQUEST_DONATION, status = REQUEST_PENDING).join(User, RequestHeader.from_user == User.id).all()
+    print donation_request
+    donation_transaction = db.session.query(TransactionHeader, User).filter_by(id = current_user.id, transaction_type = REQUEST_DONATION).join(User, TransactionHeader.from_user == User.id).all()
+    return render_template('manage_donation.html', donation_request = donation_request, donation_transaction = donation_transaction)
 
 @app.route('/dashboard')
 @login_required
