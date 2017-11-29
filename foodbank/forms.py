@@ -49,6 +49,14 @@ class RegisterFoodbankForm(FlaskForm):
     phone = StringField('phone number')
     description = StringField('description')
 
+# this is a subform for users to input food item information, can be used for DonateForm
+class CategoryFoodForm(FlaskForm):
+    category = SelectField('Select a category: ', choices=[('1', 'Category1'), ('2', 'Category2')])
+    food_item = SelectField('Select a food item: ', choices=[('1', 'foodItem1'), ('2', 'foodItem2')])
+    quantity = StringField("Quantity: ")
+    weight = StringField("weight: ")
+    expiration_date = DateField('Expiration Date: ')
+
 class DonateForm(FlaskForm):
     donate_to = SelectField('Donate to: ', coerce=int)
     beneficiary = TextField("Perferred beneficiary (Optional): ")
@@ -56,7 +64,9 @@ class DonateForm(FlaskForm):
     appointment_time = TimeField('Appointment Time: ')
     frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
     notes = TextAreaField("Do you have anything specific for this donation?")
-    submit = SubmitField('Make a Donation')
+    food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
+    plus_button = SubmitField("+")
+    minus_button = SubmitField("-")
     def __init__(self, foodbank_choices):
         super(DonateForm, self).__init__()
         self.donate_to.choices = foodbank_choices

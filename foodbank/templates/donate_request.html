@@ -12,17 +12,6 @@ Dashboard
 <link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
 {% endblock %}
 
-<!-- {% block scripts %}
-{{super()}}
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script>
-	$(function() {
-		$( ".dtpick" ).datepicker();
-	});
-</script>
-{% endblock %} -->
-
 {% block content %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
@@ -62,7 +51,35 @@ Dashboard
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Welcome, {{ user.email }}, {{ user.user_type }}</h1>
           <div class="container">
-              {{ wtf.quick_form(form) }}
+              {{ utils.flashed_messages() }}<br/>
+              <form action="/donate" method="post" role="form">
+                  {{ donateForm.hidden_tag() }}
+                  {{ wtf.form_field(donateForm.donate_to) }}
+                  {{ wtf.form_field(donateForm.beneficiary) }}
+                  {{ wtf.form_field(donateForm.appointment_date) }}
+                  {{ wtf.form_field(donateForm.appointment_time) }}
+                  {{ wtf.form_field(donateForm.frequency) }}
+                  {{ wtf.form_field(donateForm.notes) }}
+                  <h3>Add Food Items: </h3><br/>
+
+                    {% for l in donateForm.food_items %}
+                    <div style="border: 1px solid green;">
+                      {{ l.form.hidden_tag() }}
+                      {{ wtf.form_field(l.form.category) }}
+                      {{ wtf.form_field(l.form.food_item) }}
+                      {{ wtf.form_field(l.form.quantity) }}
+                      {{ wtf.form_field(l.form.weight) }}
+                      {{ wtf.form_field(l.form.expiration_date) }}
+                      </div>
+                      <br/>
+                    {% endfor %}
+
+                  {{ donateForm.plus_button() }}
+                  {{ donateForm.minus_button() }}
+                <br/>
+                <input type="submit" value="Make a donation" />
+              </form>
+
             <!--<form class="form-signin" method="POST" action="/donate">-->
               <!---->
               <!--<button class="btn btn-lg btn-primary btn-block" type="submit">Make a donation</button>-->

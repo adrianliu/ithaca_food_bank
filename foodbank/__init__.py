@@ -66,11 +66,12 @@ class RequestHeader(db.Model):
     notes = db.Column(db.String(500))
     status = db.Column(db.Integer) # 0: pending; 1: approved
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    request_details = relationship('RequestDetail', backref='request_header', lazy='dynamic')
 
 class RequestDetail(db.Model):
     __tablename__ = 'request_detail'
     id = db.Column(db.Integer, primary_key=True)
-    request_header_id = db.Column(db.Integer, ForeignKey("request_detail.id"), nullable=False) # reference to RequestHeader(id)
+    request_header_id = db.Column(db.Integer, ForeignKey("request_header.id"), nullable=False) # reference to RequestHeader(id)
     food_item_id = db.Column(db.Integer, ForeignKey("food_item.id"), nullable=False) # reference to FoodItem(id)
     category_id = db.Column(db.Integer, ForeignKey("category.id"), nullable=False) # reference to Category(id)
     quantity = db.Column(db.String(50))
@@ -269,7 +270,11 @@ def donate():
     print category_food_dict
     form = DonateForm(foodbank_choices=foodbanks)
     # form = DonateForm()
-    if form.validate_on_submit():#post successfully
+    if form.plus_button.data:
+        form.food_items.append_entry()
+    elif form.minus_button.data:
+        form.food_items.pop_entry()
+    elif form.validate_on_submit():#post successfully
         # insert the donation request into database
         new_request_header = RequestHeader(
             from_user = current_user.id,
@@ -281,11 +286,24 @@ def donate():
             frequency = form.frequency.data,
             notes = form.notes.data,
             status = REQUEST_PENDING)
+
         db.session.add(new_request_header)
+        db.session.commit()
+        for entry in form.food_items.entries:
+            new_request_detail = RequestDetail(
+                request_header_id=new_request_header.id,
+                food_item_id=entry.data['food_item'],
+                category_id=entry.data['category'],
+                quantity=entry.data['quantity'],
+                weight=entry.data['weight'],
+                expiration_date=entry.data['expiration_date']
+            )
+            db.session.add(new_request_detail)
+
         db.session.commit()
         return 'You have successfully submitted a donation request!'
 
-    return render_template('donate_request.html', form=form, user=current_user)
+    return render_template('donate_request.html', donateForm=form, user=current_user)
 
 @app.route('/manage/donation', methods=['GET', 'POST'])
 @login_required
