@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm
+from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm, EditDonorProfileForm
 from datetime import datetime
 
 
@@ -335,6 +335,34 @@ def dashboard():
     else:
         # direct the user to the index page if something wrong happened
         return index()
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    user = current_user
+    form = EditDonorProfileForm()
+    if form.validate_on_submit():
+        user.name = form.name.data
+        user.address = form.address.data
+        user.zip_code = form.zip_code.data
+        user.city = form.city.data
+        user.state = form.state.data
+        user.country = form.country.data
+        user.phone = form.phone.data
+        user.description = form.description.data
+        db.session.commit()
+        flash('Your profile has been updated!')
+        return redirect(url_for('dashboard'))
+    else:
+        form.name.data = user.name
+        form.address.data = user.address
+        form.zip_code.data = user.zip_code
+        form.city.data = user.city
+        form.state.data = user.state
+        form.country.data = user.country
+        form.phone.data = user.phone
+        form.description.data = user.description
+    return render_template('edit_profile.html', form=form)
 
 @app.route('/logout')
 @login_required

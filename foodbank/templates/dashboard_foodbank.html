@@ -1,4 +1,7 @@
 {% extends "bootstrap/base.html" %}
+{% import "bootstrap/utils.html" as utils %}
+{% import "bootstrap/wtf.html" as wtf %}
+
 
 {% block title %}
 Dashboard
@@ -24,7 +27,7 @@ Dashboard
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
+            <li><a href="{{ url_for('edit_profile') }}">Profile</a></li>
             <li><a href="{{ url_for('logout') }}">Log Out</a></li>
           </ul>
           <form class="navbar-form navbar-right">
@@ -44,6 +47,9 @@ Dashboard
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <br/>
+          {{ utils.flashed_messages() }}
+          <br/>
           <h1 class="page-header">Welcome, {{ user.name }}({{ user.email }})</h1>
 
           <div class="row placeholders">
