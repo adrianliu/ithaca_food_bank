@@ -1,6 +1,18 @@
 body {
   padding-top: 50px;
 }
+
+.intro-header {
+    color: #f8f8f8;background: url('intro-bg.jpg') no-repeat center center;
+  background-size: cover;min-width:100%;min-height:100%;position:absolute;
+}
+
+.intro-divider {
+    width: 400px;
+    border-top: 1px solid #f8f8f8;
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+
 .starter-template {
   padding: 40px 15px;
   text-align: center;
