@@ -370,6 +370,15 @@ def manage_donation():
     donation_transaction = db.session.query(TransactionHeader, User).filter_by(to_user = current_user.id, transaction_type = REQUEST_DONATION).join(User, TransactionHeader.from_user == User.id).all()
     return render_template('manage_donation.html', head_id = current_user.id, donation_request = donation_request, donation_transaction = donation_transaction)
 
+@app.route('/manage/consumption', methods=['GET', 'POST'])
+@login_required
+def manage_consumption():
+    consumption_request = db.session.query(RequestHeader, User)\
+        .filter_by(to_user = current_user.id, request_type = REQUEST_CONSUMPTION, status = REQUEST_PENDING)\
+        .join(User, RequestHeader.from_user == User.id).all()
+    consumption_transaction = db.session.query(TransactionHeader, User).filter_by(to_user = current_user.id, transaction_type = REQUEST_CONSUMPTION).join(User, TransactionHeader.from_user == User.id).all()
+    return render_template('manage_consumption.html', head_id = current_user.id, consumption_request = consumption_request, consumption_transaction = consumption_transaction)
+
 @app.route('/manage/donation/edit/<donation_id>', methods=['GET', 'POST'])
 @login_required
 def edit_donation(donation_id):
@@ -451,12 +460,24 @@ def edit_donation(donation_id):
                 datetime.strptime(donation_detail[x].expiration_date, '%Y-%m-%d')
     return render_template('edit_donation.html', donateForm = form)   
 
+@app.route('/manage/consumption/edit/<consumption_id>', methods=['GET', 'POST'])
+@login_required
+def edit_consumption(consumption_id):
+    pass
+
 @app.route('/manage/donation/view/<donation_id>', methods=['GET'])
 @login_required
 def view_donation(donation_id):
     donation_header = db.session.query(TransactionHeader).filter_by(id = donation_id).first()
     donation_detail = db.session.query(TransactionDetail).filter_by(transaction_header_id = donation_id).all()  
     return render_template('view_donation.html', donation_header = donation_header, donation_detail = donation_detail)
+
+@app.route('/manage/consumption/view/<consumption_id>', methods=['GET'])
+@login_required
+def view_consumption(consumption_id):
+    consumption_header = db.session.query(TransactionHeader).filter_by(id = consumption_id).first()
+    consumption_detail = db.session.query(TransactionDetail).filter_by(transaction_header_id = consumption_id).all()  
+    return render_template('view_consumption.html', consumption_header = consumption_header, consumption_detail = consumption_detail)
 
 @app.route('/dashboard')
 @login_required

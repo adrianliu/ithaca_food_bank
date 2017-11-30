@@ -53,12 +53,12 @@ Dashboard
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('manage_consumption') }}">Consumptions</a></li>
-            <li class="active"><a href="{{ url_for('manage_donation') }}">Donations<span class="sr-only">(current)</span></a></li>
+            <li class="active"><a href="{{ url_for('manage_consumption') }}">Consumptions<span class="sr-only">(current)</span></a></li>
+            <li><a href="{{ url_for('manage_donation') }}">Donations</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h2 class="sub-header">Pending Donations</h2>
+          <h2 class="sub-header">Pending Consumptions</h2>
           <div class="table-responsive">
             <table class="table table-striped table-hover">
               <thead>
@@ -71,7 +71,7 @@ Dashboard
                 </tr>
               </thead>
               <tbody>
-                {% for request in donation_request %}
+                {% for request in consumption_request %}
                 <tr>
                   <td>{{ request[1].name }}</td>
                   <td>{{ request[1].email }}</td>
@@ -79,7 +79,7 @@ Dashboard
                   <td>{{ request[0].appointment_time }}</td>
                   <td>
                     <div>
-                      <a class="btn btn-success btn-sm" href="{{ url_for('edit_donation', donation_id = request[0].id) }}" role="button">Edit</a>
+                      <a class="btn btn-success btn-sm" href="{{ url_for('edit_consumption', consumption_id = request[0].id) }}" role="button">Edit</a>
                     </div>
                   </td>
                 </tr>
@@ -88,7 +88,7 @@ Dashboard
             </table>
           </div>
 
-          <h2 class="sub-header">Completed Donations</h2>
+          <h2 class="sub-header">Completed Consumptions</h2>
           <div class="table-responsive">
             <table class="table table-striped table-hover">
               <thead>
@@ -101,7 +101,7 @@ Dashboard
                 </tr>
               </thead>
               <tbody>
-                {% for transaction in donation_transaction %}
+                {% for transaction in consumption_transaction %}
                 <tr>
                   <td>{{ transaction[1].name }}</td>
                   <td>{{ transaction[1].email }}</td>
@@ -109,7 +109,7 @@ Dashboard
                   <td>{{ transaction[0].appointment_time }}</td>
                   <td>
                     <div>
-                      <a class="btn btn-success btn-sm" href="{{ url_for('view_donation', donation_id = transaction[0].id) }}" role="button">View</a>
+                      <a class="btn btn-success btn-sm" href="{{ url_for('view_consumption', consumption_id = transaction[0].id) }}" role="button">View</a>
                     </div>
                   </td>
                 </tr>
