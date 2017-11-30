@@ -308,6 +308,59 @@ def donate():
 
     return render_template('donate_request.html', donateForm=form, user=current_user)
 
+@app.route('/consume', methods=['GET', 'POST'])
+@login_required
+def consume():
+    foodbanks = db.session.query(User.id, User.name).filter_by(user_type = TYPE_FOODBANK).all()
+
+    categories = db.session.query(Category).all()
+    categories = Category.query.all()
+    # load all of the category->food mapping to memory
+    category_food_dict = {}
+    for category in categories:
+        food_items = category.food_items.all()
+        category_food_dict[str(category.id)] = food_items
+    print '------------category_food_dict----------------'
+    print category_food_dict
+    form = DonateForm(foodbank_choices=foodbanks)
+    # form = DonateForm()
+    if form.plus_button.data:
+        form.food_items.append_entry()
+    elif form.minus_button.data:
+        form.food_items.pop_entry()
+    elif form.validate_on_submit():#post successfully
+        # insert the donation request into database
+        new_request_header = RequestHeader(
+            from_user = current_user.id,
+            to_user = int(form.donate_to.data),
+            appointment_date = form.appointment_date.data,
+            appointment_time = form.appointment_time.data,
+            request_type = REQUEST_CONSUMPTION,
+            beneficiary = form.beneficiary.data,
+            frequency = form.frequency.data,
+            notes = form.notes.data,
+            status = REQUEST_PENDING)
+
+        db.session.add(new_request_header)
+        db.session.commit()
+
+        for entry in form.food_items.entries:
+            new_request_detail = RequestDetail(
+                request_header_id=new_request_header.id,
+                food_item_id=entry.data['food_item'],
+                category_id=entry.data['category'],
+                quantity=entry.data['quantity'],
+                weight=entry.data['weight'],
+                expiration_date=entry.data['expiration_date']
+            )
+            db.session.add(new_request_detail)
+
+        db.session.commit()
+        flash("You have successfully submitted a consumption request!")
+        return redirect(url_for('dashboard'))
+
+    return render_template('consume_request.html', donateForm=form, user=current_user)
+
 @app.route('/manage/donation', methods=['GET', 'POST'])
 @login_required
 def manage_donation():
