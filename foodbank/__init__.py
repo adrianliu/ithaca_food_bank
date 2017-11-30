@@ -319,16 +319,67 @@ def manage_donation():
 @app.route('/manage/donation/edit/<donation_id>', methods=['GET', 'POST'])
 @login_required
 def edit_donation(donation_id):
-    donation_header = db.session.query(RequestHeader).filter_by(id = donation_id).all()
+    donation_header = db.session.query(RequestHeader).filter_by(id = donation_id).first()
     donation_detail = db.session.query(RequestDetail).filter_by(request_header_id = donation_id).all()  
-    form = ManageForm(donation_header[0], donation_detail)
-    if form.plus_button.data:
-        form.food_items.append_entry()
-    elif form.minus_button.data:
-        form.food_items.pop_entry()
-    elif form.validate_on_submit():
-        pass
+    form = ManageForm()
+    if request.method == 'POST':
+        if form.plus_button.data:
+            form.food_items.append_entry()
+        elif form.minus_button.data:
+            form.food_items.pop_entry()
+        elif form.validate_on_submit():
+            if request.form['submit'] == 'Update':
+                donation_header.beneficiary = form.beneficiary.data
+                donation_header.appointment_date = form.appointment_date.data
+                donation_header.appointment_time = form.appointment_time.data
+                donation_header.frequency = form.frequency.data
+                donation_header.notes = form.notes.data
+                db.session.query(RequestDetail).filter_by(request_header_id = donation_id).delete()
+                for entry in form.food_items.entries:
+                    new_request_detail = RequestDetail(
+                        request_header_id=donation_id,
+                        food_item_id=entry.data['food_item'],
+                        category_id=entry.data['category'],
+                        quantity=entry.data['quantity'],
+                        weight=entry.data['weight'],
+                        expiration_date=entry.data['expiration_date']
+                    )
+                    db.session.add(new_request_detail)
+                db.session.commit()
+                flash('You have updated one request!')
+                return redirect(url_for('dashboard'))
+            elif request.form['submit'] == 'Approve':
+                donation_header.status = REQUEST_APPROVED
+                new_transaction_header = TransactionHeader(
+                    from_user = donation_header.from_user,
+                    to_user = donation_header.to_user,
+                    appointment_date = form.appointment_date.data,
+                    appointment_time = form.appointment_time.data,
+                    transaction_type = REQUEST_DONATION,
+                    beneficiary = form.beneficiary.data,
+                    frequency = form.frequency.data,
+                    notes = form.notes.data)
+                db.session.add(new_transaction_header)
+                for entry in form.food_items.entries:
+                    new_transaction_detail = TransactionDetail(
+                        transaction_header_id=donation_id,
+                        food_item_id=entry.data['food_item'],
+                        category_id=entry.data['category'],
+                        quantity=entry.data['quantity'],
+                        weight=entry.data['weight'],
+                        expiration_date=entry.data['expiration_date']
+                    )
+                    db.session.add(new_transaction_detail)
+                db.session.commit()
+                flash('You have approved one transaction!')
+                return redirect(url_for('dashboard'))
     else:
+        form.header_id.data = donation_header.id
+        form.beneficiary.data = donation_header.beneficiary
+        form.appointment_date.data = donation_header.appointment_date
+        form.appointment_time.data = donation_header.appointment_time
+        form.frequency.choice = donation_header.frequency
+        form.notes.data = donation_header.notes
         for x in range(1, len(donation_detail)):
             form.food_items.append_entry()
         for x in range(0, len(donation_detail)):
@@ -336,7 +387,7 @@ def edit_donation(donation_id):
             form.food_items.__getitem__(x).food_item.data = donation_detail[x].food_item_id
             form.food_items.__getitem__(x).quantity.data = donation_detail[x].quantity
             form.food_items.__getitem__(x).weight.data = donation_detail[x].weight
-            # self.food_items.__getitem__(x).expiration_date.data = donation_detail[x].expiration_date
+            # form.food_items.__getitem__(x).expiration_date.data = donation_detail[x].expiration_date
     return render_template('edit_donation.html', donateForm = form)   
 
 @app.route('/dashboard')

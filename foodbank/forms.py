@@ -94,14 +94,8 @@ class ManageForm(FlaskForm):
     food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
     plus_button = SubmitField("+")
     minus_button = SubmitField("-")
-    def __init__(self, donation_header, donation_detail):
+    def __init__(self):
         super(ManageForm, self).__init__()
-        self.header_id.data = donation_header.id
-        self.beneficiary.data = donation_header.beneficiary
-        # self.appointment_date.data = donation_header.appointment_date
-        self.appointment_time.data = donation_header.appointment_time
-        self.frequency.choice = donation_header.frequency
-        self.notes.data = donation_header.notes
 
 # Below is just for testing...
 class LocationForm(FlaskForm):
