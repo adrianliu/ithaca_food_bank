@@ -34,9 +34,6 @@ class EditDonorProfileForm(FlaskForm):
     country = StringField('country')
     phone = StringField('phone number')
     description = StringField('description')
-    # add app.config['RECAPTCHA_PUBLIC_KEY'] app.config['RECAPTCHA_PRIVATE_KEY']
-    # do not forget to add {{ form.recaptcha }} in templates
-    # recaptcha = RecaptchaFeild()
 
 class RegisterConsumerForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
@@ -50,9 +47,29 @@ class RegisterConsumerForm(FlaskForm):
     phone = StringField('phone number')
     description = StringField('description')
 
+class EditConsumerProfileForm(FlaskForm):
+    name = StringField('name')
+    address = StringField('current address')
+    zip_code = StringField('zip code')
+    city = StringField('city')
+    state = StringField('state')
+    country = StringField('country')
+    phone = StringField('phone number')
+    description = StringField('description')
+
 class RegisterFoodbankForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=20)])
+    name = StringField('name')
+    address = StringField('current address')
+    zip_code = StringField('zip code')
+    city = StringField('city')
+    state = StringField('state')
+    country = StringField('country')
+    phone = StringField('phone number')
+    description = StringField('description')
+
+class EditFoodbankProfileForm(FlaskForm):
     name = StringField('name')
     address = StringField('current address')
     zip_code = StringField('zip code')

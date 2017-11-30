@@ -8,7 +8,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm, ManageForm, EditDonorProfileForm, ViewForm
+from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm, \
+    ManageForm, EditDonorProfileForm, ViewForm, EditFoodbankProfileForm, EditConsumerProfileForm
 from datetime import datetime
 
 
@@ -421,7 +422,12 @@ def dashboard():
 @login_required
 def edit_profile():
     user = current_user
-    form = EditDonorProfileForm()
+    if user.user_type == TYPE_FOODBANK:
+        form = EditFoodbankProfileForm()
+    elif user.user_type == TYPE_CONSUMER:
+        form = EditConsumerProfileForm()
+    else:
+        form = EditDonorProfileForm()
     if form.validate_on_submit():
         user.name = form.name.data
         user.address = form.address.data
@@ -443,7 +449,12 @@ def edit_profile():
         form.country.data = user.country
         form.phone.data = user.phone
         form.description.data = user.description
-    return render_template('edit_profile.html', form=form)
+    if user.user_type == TYPE_FOODBANK:
+        return render_template('edit_profile_foodbank.html', form=form)
+    elif user.user_type == TYPE_CONSUMER:
+        return render_template('edit_profile_consumer.html', form=form)
+    else:
+        return render_template('edit_profile_donor.html', form=form)
 
 @app.route('/logout')
 @login_required
