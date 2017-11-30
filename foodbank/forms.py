@@ -102,14 +102,6 @@ class ManageForm(FlaskForm):
         self.appointment_time.data = donation_header.appointment_time
         self.frequency.choice = donation_header.frequency
         self.notes.data = donation_header.notes
-        for x in range(1, len(donation_detail)):
-            self.food_items.append_entry()
-        for x in range(0, len(donation_detail)):
-            self.food_items.__getitem__(x).category.data = donation_detail[x].category_id
-            self.food_items.__getitem__(x).food_item.data = donation_detail[x].food_item_id
-            self.food_items.__getitem__(x).quantity.data = donation_detail[x].quantity
-            self.food_items.__getitem__(x).weight.data = donation_detail[x].weight
-            # self.food_items.__getitem__(x).expiration_date.data = donation_detail[x].expiration_date
 
 # Below is just for testing...
 class LocationForm(FlaskForm):

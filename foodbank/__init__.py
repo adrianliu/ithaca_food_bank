@@ -328,6 +328,15 @@ def edit_donation(donation_id):
         form.food_items.pop_entry()
     elif form.validate_on_submit():
         pass
+    else:
+        for x in range(1, len(donation_detail)):
+            form.food_items.append_entry()
+        for x in range(0, len(donation_detail)):
+            form.food_items.__getitem__(x).category.data = donation_detail[x].category_id
+            form.food_items.__getitem__(x).food_item.data = donation_detail[x].food_item_id
+            form.food_items.__getitem__(x).quantity.data = donation_detail[x].quantity
+            form.food_items.__getitem__(x).weight.data = donation_detail[x].weight
+            # self.food_items.__getitem__(x).expiration_date.data = donation_detail[x].expiration_date
     return render_template('edit_donation.html', donateForm = form)   
 
 @app.route('/dashboard')
