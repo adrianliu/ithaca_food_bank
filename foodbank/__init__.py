@@ -418,6 +418,19 @@ def dashboard():
         # direct the user to the index page if something wrong happened
         return index()
 
+@app.route('/foodbank_locator', methods=['GET', 'POST'])
+@login_required
+def foodbank_locator():
+    user = current_user
+    foodbanks = db.session.query(User.id, User.name, User.email, User.address, User.phone).filter_by(user_type=TYPE_FOODBANK).all()
+    if request.method == 'POST':
+        pass
+    if user.user_type == TYPE_CONSUMER:
+        return render_template('foodbank_locator_consumer.html', user=user, foodbanks=foodbanks)
+    else:
+        return render_template('foodbank_locator_donor.html', user=user, foodbanks=foodbanks)
+
+
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
