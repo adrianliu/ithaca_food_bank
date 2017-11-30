@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm, ManageForm, EditDonorProfileForm
+from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm, ManageForm, EditDonorProfileForm, ViewForm
 from datetime import datetime
 
 
@@ -402,22 +402,7 @@ def edit_donation(donation_id):
 def view_donation(donation_id):
     donation_header = db.session.query(TransactionHeader).filter_by(id = donation_id).first()
     donation_detail = db.session.query(TransactionDetail).filter_by(transaction_header_id = donation_id).all()  
-    form = ManageForm()
-    form.header_id.data = donation_header.id
-    form.beneficiary.data = donation_header.beneficiary
-    form.appointment_date.data = donation_header.appointment_date
-    form.appointment_time.data = donation_header.appointment_time
-    form.frequency.choice = donation_header.frequency
-    form.notes.data = donation_header.notes
-    for x in range(1, len(donation_detail)):
-        form.food_items.append_entry()
-    for x in range(0, len(donation_detail)):
-        form.food_items.__getitem__(x).category.data = donation_detail[x].category_id
-        form.food_items.__getitem__(x).food_item.data = donation_detail[x].food_item_id
-        form.food_items.__getitem__(x).quantity.data = donation_detail[x].quantity
-        form.food_items.__getitem__(x).weight.data = donation_detail[x].weight
-        # form.food_items.__getitem__(x).expiration_date.data = donation_detail[x].expiration_date
-    return render_template('view_donation.html', donateForm = form)
+    return render_template('view_donation.html', donation_header = donation_header, donation_detail = donation_detail)
 
 @app.route('/dashboard')
 @login_required
