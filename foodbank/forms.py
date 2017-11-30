@@ -89,6 +89,8 @@ class ManageForm(FlaskForm):
     appointment_date = DateField('Appointment Date: ')
     appointment_time = TimeField('Appointment Time: ')
     frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
+
+
     notes = TextAreaField("Do you have anything specific for this donation?")
     food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
     plus_button = SubmitField("+")
@@ -98,7 +100,8 @@ class ManageForm(FlaskForm):
         self.beneficiary.data = donation_header.beneficiary
         # self.appointment_date.data = donation_header.appointment_date
         self.appointment_time.data = donation_header.appointment_time
-        self.frequency.data = donation_header.frequency
+        self.frequency.default = donation_header.frequency
+
         self.notes.data = donation_header.notes
         for x in range(1, len(donation_detail)):
             self.food_items.append_entry()

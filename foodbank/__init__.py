@@ -325,6 +325,7 @@ def edit_donation(donation_id):
         donation_header = db.session.query(RequestHeader).filter_by(id = donation_id).all()
         donation_detail = db.session.query(RequestDetail).filter_by(request_header_id = donation_id).all()  
         form = ManageForm(donation_header[0], donation_detail)
+        form.process()
         if form.plus_button.data:
             form.food_items.append_entry()
         elif form.minus_button.data:
