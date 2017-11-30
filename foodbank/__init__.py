@@ -387,7 +387,11 @@ def edit_donation(donation_id):
             form.food_items.__getitem__(x).food_item.data = donation_detail[x].food_item_id
             form.food_items.__getitem__(x).quantity.data = donation_detail[x].quantity
             form.food_items.__getitem__(x).weight.data = donation_detail[x].weight
-            # form.food_items.__getitem__(x).expiration_date.data = donation_detail[x].expiration_date
+            print '-----------------'
+            print type(donation_detail[x].expiration_date)
+            print donation_detail[x].expiration_date
+            form.food_items.__getitem__(x).expiration_date.data = \
+                datetime.strptime(donation_detail[x].expiration_date, '%Y-%m-%d')
     return render_template('edit_donation.html', donateForm = form)   
 
 @app.route('/dashboard')
