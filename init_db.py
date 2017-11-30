@@ -37,6 +37,10 @@ fooditem3 = FoodItem(category=category_one, name='PineApple', description='This 
 fooditem4 = FoodItem(category=category_two, name='Beef', description='This is Beef')
 fooditem5 = FoodItem(category=category_two, name='Lamb', description='This is Lamb')
 fooditem6 = FoodItem(category=category_two, name='Pork', description='This is Pork')
+fooditem7 = FoodItem(category=category_two, name='Duck', description='This is Beef')
+fooditem8 = FoodItem(category=category_two, name='Chicken', description='This is Lamb')
+fooditem9 = FoodItem(category=category_two, name='Fish', description='This is Pork')
+
 
 db.session.add(fooditem1)
 db.session.add(fooditem2)
@@ -44,4 +48,7 @@ db.session.add(fooditem3)
 db.session.add(fooditem4)
 db.session.add(fooditem5)
 db.session.add(fooditem6)
+db.session.add(fooditem7)
+db.session.add(fooditem8)
+db.session.add(fooditem9)
 db.session.commit()

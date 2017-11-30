@@ -82,7 +82,9 @@ class EditFoodbankProfileForm(FlaskForm):
 # this is a subform for users to input food item information, can be used for DonateForm
 class CategoryFoodForm(FlaskForm):
     category = SelectField('Select a category: ', choices=[('1', 'Category1'), ('2', 'Category2')])
-    food_item = SelectField('Select a food item: ', choices=[('1', 'foodItem1'), ('2', 'foodItem2')])
+    food_item = SelectField('Select a food item: ',
+                            choices=[('1', 'foodItem1'), ('2', 'foodItem2'),
+                                     ('3', 'foodItem3'), ('4', 'foodItem4'),('5', 'foodItem5'), ('6', 'foodItem6')])
     quantity = StringField("Quantity: ")
     weight = StringField("weight: ")
     expiration_date = DateField('Expiration Date: ')
