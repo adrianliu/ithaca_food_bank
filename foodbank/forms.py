@@ -97,6 +97,17 @@ class ManageForm(FlaskForm):
     def __init__(self):
         super(ManageForm, self).__init__()
 
+class ViewForm(FlaskForm):
+    header_id = HiddenField()
+    beneficiary = TextField("Perferred beneficiary (Optional): ")
+    appointment_date = DateField('Appointment Date: ')
+    appointment_time = TimeField('Appointment Time: ')
+    frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
+    notes = TextAreaField("Do you have anything specific for this donation?")
+    food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
+    def __init__(self):
+        super(ViewForm, self).__init__()
+
 # Below is just for testing...
 class LocationForm(FlaskForm):
     location_id = StringField('location_id')

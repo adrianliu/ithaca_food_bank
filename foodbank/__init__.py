@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm, ManageForm, EditDonorProfileForm
+from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm, ManageForm, EditDonorProfileForm, ViewForm
 from datetime import datetime
 
 
@@ -351,6 +351,7 @@ def edit_donation(donation_id):
             elif request.form['submit'] == 'Approve':
                 donation_header.status = REQUEST_APPROVED
                 new_transaction_header = TransactionHeader(
+                    id = donation_id,
                     from_user = donation_header.from_user,
                     to_user = donation_header.to_user,
                     appointment_date = form.appointment_date.data,
@@ -360,9 +361,11 @@ def edit_donation(donation_id):
                     frequency = form.frequency.data,
                     notes = form.notes.data)
                 db.session.add(new_transaction_header)
+                db.session.commit()
+
                 for entry in form.food_items.entries:
                     new_transaction_detail = TransactionDetail(
-                        transaction_header_id=donation_id,
+                        transaction_header_id=new_transaction_header.id,
                         food_item_id=entry.data['food_item'],
                         category_id=entry.data['category'],
                         quantity=entry.data['quantity'],
@@ -393,6 +396,13 @@ def edit_donation(donation_id):
             form.food_items.__getitem__(x).expiration_date.data = \
                 datetime.strptime(donation_detail[x].expiration_date, '%Y-%m-%d')
     return render_template('edit_donation.html', donateForm = form)   
+
+@app.route('/manage/donation/view/<donation_id>', methods=['GET'])
+@login_required
+def view_donation(donation_id):
+    donation_header = db.session.query(TransactionHeader).filter_by(id = donation_id).first()
+    donation_detail = db.session.query(TransactionDetail).filter_by(transaction_header_id = donation_id).all()  
+    return render_template('view_donation.html', donation_header = donation_header, donation_detail = donation_detail)
 
 @app.route('/dashboard')
 @login_required

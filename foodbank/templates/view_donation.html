@@ -58,65 +58,58 @@ Dashboard
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h2 class="sub-header">Pending Donations</h2>
-          <div class="table-responsive">
-            <table class="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Appointment Date</th>
-                  <th>Appointment Time</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for request in donation_request %}
-                <tr>
-                  <td>{{ request[1].name }}</td>
-                  <td>{{ request[1].email }}</td>
-                  <td>{{ request[0].appointment_date }}</td>
-                  <td>{{ request[0].appointment_time }}</td>
-                  <td>
-                    <div>
-                      <a class="btn btn-success btn-sm" href="{{ url_for('edit_donation', donation_id = request[0].id) }}" role="button">Edit</a>
-                    </div>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
+          <div class="container">
+            <table class="table table-striped table-hover table-bordered">
+              <tr>
+                <th>Appointment Date</th>
+                <td>{{ donation_header.appointment_date }}</td>
+              </tr>
+              <tr>
+                <th>Appointment Time</th>
+                <td>{{ donation_header.appointment_time }}</td>
+              </tr>
+              <tr>
+                <th>Beneficiary</th>
+                <td>{{ donation_header.beneficiary }}</td>
+              </tr>
+              <tr>
+                <th>Frequency</th>
+                <td>{{ donation_header.frequency }}</td>
+              </tr>
+              <tr>
+                <th>Notes</th>
+                <td>{{ donation_header.notes }}</td>
+              </tr>
             </table>
-          </div>
+            
+            <h3>Food Items: </h3><br/>
 
-          <h2 class="sub-header">Completed Donations</h2>
-          <div class="table-responsive">
-            <table class="table table-striped table-hover">
-              <thead>
+              {% for details in donation_detail %}
+              <table class="table table-striped table-hover table-bordered">
                 <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Appointment Date</th>
-                  <th>Appointment Time</th>
-                  <th></th>
+                  <th>Food Item ID</th>
+                  <td>{{ details.food_item_id }}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {% for transaction in donation_transaction %}
                 <tr>
-                  <td>{{ transaction[1].name }}</td>
-                  <td>{{ transaction[1].email }}</td>
-                  <td>{{ transaction[0].appointment_date }}</td>
-                  <td>{{ transaction[0].appointment_time }}</td>
-                  <td>
-                    <div>
-                      <a class="btn btn-success btn-sm" href="{{ url_for('view_donation', donation_id = transaction[0].id) }}" role="button">View</a>
-                    </div>
-                  </td>
+                  <th>Category ID</th>
+                  <td>{{ details.category_id }}</td>
                 </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div> 
+                <tr>
+                  <th>Quantity</th>
+                  <td>{{ details.quantity }}</td>
+                </tr>
+                <tr>
+                  <th>Weight</th>
+                  <td>{{ details.weight }}</td>
+                </tr>
+                <tr>
+                  <th>Expiration Date</th>
+                  <td>{{ details.expiration_date }}</td>
+                </tr>
+              </table>
+              {% endfor %}
+            <br/>
+          </div>
         </div>
       </div>
     </div>
