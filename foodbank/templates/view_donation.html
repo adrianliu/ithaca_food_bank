@@ -58,65 +58,31 @@ Dashboard
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h2 class="sub-header">Pending Donations</h2>
-          <div class="table-responsive">
-            <table class="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Appointment Date</th>
-                  <th>Appointment Time</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for request in donation_request %}
-                <tr>
-                  <td>{{ request[1].name }}</td>
-                  <td>{{ request[1].email }}</td>
-                  <td>{{ request[0].appointment_date }}</td>
-                  <td>{{ request[0].appointment_time }}</td>
-                  <td>
-                    <div>
-                      <a class="btn btn-success btn-sm" href="{{ url_for('edit_donation', donation_id = request[0].id) }}" role="button">Edit</a>
-                    </div>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+          <div class="container">
+            {{ donateForm.hidden_tag() }}
+            {{ wtf.form_field(donateForm.beneficiary) }}
+            {{ wtf.form_field(donateForm.appointment_date) }}
+            {{ wtf.form_field(donateForm.appointment_time) }}
+            {{ wtf.form_field(donateForm.frequency) }}
+            {{ wtf.form_field(donateForm.notes) }}
+            <h3>Add Food Items: </h3><br/>
 
-          <h2 class="sub-header">Completed Donations</h2>
-          <div class="table-responsive">
-            <table class="table table-striped table-hover">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Appointment Date</th>
-                  <th>Appointment Time</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for transaction in donation_transaction %}
-                <tr>
-                  <td>{{ transaction[1].name }}</td>
-                  <td>{{ transaction[1].email }}</td>
-                  <td>{{ transaction[0].appointment_date }}</td>
-                  <td>{{ transaction[0].appointment_time }}</td>
-                  <td>
-                    <div>
-                      <a class="btn btn-success btn-sm" href="{{ url_for('view_donation', donation_id = transaction[0].id) }}" role="button">View</a>
-                    </div>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div> 
+              {% for l in donateForm.food_items %}
+              <div style="border: 1px solid green;">
+                {{ l.form.hidden_tag() }}
+                {{ wtf.form_field(l.form.category) }}
+                {{ wtf.form_field(l.form.food_item) }}
+                {{ wtf.form_field(l.form.quantity) }}
+                {{ wtf.form_field(l.form.weight) }}
+                {{ wtf.form_field(l.form.expiration_date) }}
+                </div>
+                <br/>
+              {% endfor %}
+
+            {{ donateForm.plus_button() }}
+            {{ donateForm.minus_button() }}
+            <br/>
+          </div>
         </div>
       </div>
     </div>

@@ -351,6 +351,7 @@ def edit_donation(donation_id):
             elif request.form['submit'] == 'Approve':
                 donation_header.status = REQUEST_APPROVED
                 new_transaction_header = TransactionHeader(
+                    id = donation_id,
                     from_user = donation_header.from_user,
                     to_user = donation_header.to_user,
                     appointment_date = form.appointment_date.data,
@@ -360,9 +361,11 @@ def edit_donation(donation_id):
                     frequency = form.frequency.data,
                     notes = form.notes.data)
                 db.session.add(new_transaction_header)
+                db.session.commit()
+
                 for entry in form.food_items.entries:
                     new_transaction_detail = TransactionDetail(
-                        transaction_header_id=donation_id,
+                        transaction_header_id=new_transaction_header.id,
                         food_item_id=entry.data['food_item'],
                         category_id=entry.data['category'],
                         quantity=entry.data['quantity'],
@@ -389,6 +392,28 @@ def edit_donation(donation_id):
             form.food_items.__getitem__(x).weight.data = donation_detail[x].weight
             # form.food_items.__getitem__(x).expiration_date.data = donation_detail[x].expiration_date
     return render_template('edit_donation.html', donateForm = form)   
+
+@app.route('/manage/donation/view/<donation_id>', methods=['GET'])
+@login_required
+def view_donation(donation_id):
+    donation_header = db.session.query(TransactionHeader).filter_by(id = donation_id).first()
+    donation_detail = db.session.query(TransactionDetail).filter_by(transaction_header_id = donation_id).all()  
+    form = ManageForm()
+    form.header_id.data = donation_header.id
+    form.beneficiary.data = donation_header.beneficiary
+    form.appointment_date.data = donation_header.appointment_date
+    form.appointment_time.data = donation_header.appointment_time
+    form.frequency.choice = donation_header.frequency
+    form.notes.data = donation_header.notes
+    for x in range(1, len(donation_detail)):
+        form.food_items.append_entry()
+    for x in range(0, len(donation_detail)):
+        form.food_items.__getitem__(x).category.data = donation_detail[x].category_id
+        form.food_items.__getitem__(x).food_item.data = donation_detail[x].food_item_id
+        form.food_items.__getitem__(x).quantity.data = donation_detail[x].quantity
+        form.food_items.__getitem__(x).weight.data = donation_detail[x].weight
+        # form.food_items.__getitem__(x).expiration_date.data = donation_detail[x].expiration_date
+    return render_template('view_donation.html', donateForm = form)
 
 @app.route('/dashboard')
 @login_required
