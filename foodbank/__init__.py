@@ -326,7 +326,13 @@ def edit_donation(donation_id):
         form.food_items.append_entry()
     elif form.minus_button.data:
         form.food_items.pop_entry()
-    elif form.validate_on_submit():
+    elif request.method == 'POST' and form.validate_on_submit():
+        if request.form['submit']  == 'Update':
+            print 'Update----------------------'
+
+        elif request.form['submit'] == 'Approve':
+            print 'Approve----------------------'
+    elif request.method == 'POST' and not form.validate_on_submit():
         pass
     else:
         for x in range(1, len(donation_detail)):
