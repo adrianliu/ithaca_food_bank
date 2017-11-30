@@ -314,25 +314,21 @@ def manage_donation():
         .filter_by(to_user = current_user.id, request_type = REQUEST_DONATION, status = REQUEST_PENDING)\
         .join(User, RequestHeader.from_user == User.id).all()
     donation_transaction = db.session.query(TransactionHeader, User).filter_by(to_user = current_user.id, transaction_type = REQUEST_DONATION).join(User, TransactionHeader.from_user == User.id).all()
-    return render_template('manage_donation.html', donation_request = donation_request, donation_transaction = donation_transaction)
+    return render_template('manage_donation.html', head_id = current_user.id, donation_request = donation_request, donation_transaction = donation_transaction)
 
 @app.route('/manage/donation/edit/<donation_id>', methods=['GET', 'POST'])
 @login_required
 def edit_donation(donation_id):
-    if donation_id == '0':
-        return "test"
-    else:
-        donation_header = db.session.query(RequestHeader).filter_by(id = donation_id).all()
-        donation_detail = db.session.query(RequestDetail).filter_by(request_header_id = donation_id).all()  
-        form = ManageForm(donation_header[0], donation_detail)
-        form.process()
-        if form.plus_button.data:
-            form.food_items.append_entry()
-        elif form.minus_button.data:
-            form.food_items.pop_entry()
-        elif form.validate_on_submit():
-            pass
-        return render_template('edit_donation.html', donateForm = form)   
+    donation_header = db.session.query(RequestHeader).filter_by(id = donation_id).all()
+    donation_detail = db.session.query(RequestDetail).filter_by(request_header_id = donation_id).all()  
+    form = ManageForm(donation_header[0], donation_detail)
+    if form.plus_button.data:
+        form.food_items.append_entry()
+    elif form.minus_button.data:
+        form.food_items.pop_entry()
+    elif form.validate_on_submit():
+        pass
+    return render_template('edit_donation.html', donateForm = form)   
 
 @app.route('/dashboard')
 @login_required

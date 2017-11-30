@@ -1,13 +1,13 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SelectField, TextField, TextAreaField, SubmitField, FieldList, FormField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, TextField, TextAreaField, SubmitField, FieldList, FormField, HiddenField
 from wtforms.validators import InputRequired, Email, Length
 from wtforms_components import DateField, TimeField
 
 #TODO: do some research on WTForms-Components: https://wtforms-components.readthedocs.io/en/latest/#
 
 class LoginForm(FlaskForm):
-    email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
-    password = PasswordField('password', validators=[InputRequired(), Length(min=1, max=20)])
+    email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)], render_kw = {"placeholder": "email"})
+    password = PasswordField('password', validators=[InputRequired(), Length(min=1, max=20)], render_kw = {"placeholder": "password"})
     remember = BooleanField('remember me')
 
 class RegisterDonorForm(FlaskForm):
@@ -85,23 +85,22 @@ class DonateForm(FlaskForm):
         self.donate_to.choices = foodbank_choices
 
 class ManageForm(FlaskForm):
+    header_id = HiddenField()
     beneficiary = TextField("Perferred beneficiary (Optional): ")
     appointment_date = DateField('Appointment Date: ')
     appointment_time = TimeField('Appointment Time: ')
     frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
-
-
     notes = TextAreaField("Do you have anything specific for this donation?")
     food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
     plus_button = SubmitField("+")
     minus_button = SubmitField("-")
     def __init__(self, donation_header, donation_detail):
         super(ManageForm, self).__init__()
+        self.header_id.data = donation_header.id
         self.beneficiary.data = donation_header.beneficiary
         # self.appointment_date.data = donation_header.appointment_date
         self.appointment_time.data = donation_header.appointment_time
-        self.frequency.default = donation_header.frequency
-
+        self.frequency.choice = donation_header.frequency
         self.notes.data = donation_header.notes
         for x in range(1, len(donation_detail)):
             self.food_items.append_entry()

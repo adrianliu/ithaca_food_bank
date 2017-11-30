@@ -59,7 +59,7 @@ Dashboard
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <div class="container">
-            <form action="/manage/donation/edit/0" method="post" role="form">
+            <form action="/manage/donation/edit/{{ donateForm.header_id.data }}" method="post" role="form">
                   {{ donateForm.hidden_tag() }}
                   {{ wtf.form_field(donateForm.beneficiary) }}
                   {{ wtf.form_field(donateForm.appointment_date) }}
