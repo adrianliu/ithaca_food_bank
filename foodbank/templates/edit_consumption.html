@@ -52,24 +52,42 @@ Dashboard
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('consume') }}">Claim a consumption</a></li>
-            <li><a href="{{ url_for('foodbank_locator') }}">Foodbank Locator</a></li>
+            <li class="active"><a href="{{ url_for('manage_consumption') }}">Consumptions<span class="sr-only">(current)</span></a></li>
+            <li><a href="{{ url_for('manage_donation') }}">Donations</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <div class="container">
-              <form class="form-signin" method="POST" action="/edit_profile">
-                {{ form.hidden_tag() }}
-                {{ wtf.form_field(form.name) }}
-                {{ wtf.form_field(form.address) }}
-                {{ wtf.form_field(form.zip_code) }}
-                {{ wtf.form_field(form.city) }}
-                {{ wtf.form_field(form.state) }}
-                {{ wtf.form_field(form.country) }}
-                {{ wtf.form_field(form.phone) }}
-                {{ wtf.form_field(form.description) }}
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Update Profile</button>
-          </form>
+            <form action="/manage/consumption/edit/{{ claimForm.header_id.data }}" method="post" role="form">
+                  {{ claimForm.hidden_tag() }}
+                  {{ wtf.form_field(claimForm.beneficiary) }}
+                  {{ wtf.form_field(claimForm.appointment_date) }}
+                  {{ wtf.form_field(claimForm.appointment_time) }}
+                  {{ wtf.form_field(claimForm.frequency) }}
+                  {{ wtf.form_field(claimForm.notes) }}
+                  <h3>Add Food Items: </h3><br/>
+
+                    {% for l in claimForm.food_items %}
+                    <div style="border: 1px solid green;">
+                      {{ l.form.hidden_tag() }}
+                      {{ wtf.form_field(l.form.category) }}
+                      {{ wtf.form_field(l.form.food_item) }}
+                      {{ wtf.form_field(l.form.quantity) }}
+                      {{ wtf.form_field(l.form.weight) }}
+                      {{ wtf.form_field(l.form.expiration_date) }}
+                      </div>
+                      <br/>
+                    {% endfor %}
+
+                  {{ claimForm.plus_button() }}
+                  {{ claimForm.minus_button() }}
+                <br/><br>
+                <div>
+                  <input class="btn btn-info btn-sm" type="submit" name="submit" value="Update" style="width: 100px">
+                  <input class="btn btn-info btn-sm" type="submit" name="submit" value="Approve" style="width: 100px">
+                  <a href="{{ url_for('manage_consumption') }}" class="btn btn-info btn-sm" role="button" style="width: 100px">Cancel</a>
+                </div>
+              </form>
           </div>
         </div>
       </div>

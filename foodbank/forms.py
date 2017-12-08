@@ -103,7 +103,21 @@ class DonateForm(FlaskForm):
         super(DonateForm, self).__init__()
         self.donate_to.choices = foodbank_choices
 
-class ManageForm(FlaskForm):
+class ClaimForm(FlaskForm):
+    claim_from = SelectField('Claim from: ', coerce=int)
+    beneficiary = TextField("Perferred beneficiary (Optional): ")
+    appointment_date = DateField('Appointment Date: ')
+    appointment_time = TimeField('Appointment Time: ')
+    frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
+    notes = TextAreaField("Do you have anything specific for this consumption?")
+    food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
+    plus_button = SubmitField("+")
+    minus_button = SubmitField("-")
+    def __init__(self, foodbank_choices):
+        super(ClaimForm, self).__init__()
+        self.claim_from.choices = foodbank_choices
+
+class ManageDonateForm(FlaskForm):
     header_id = HiddenField()
     beneficiary = TextField("Perferred beneficiary (Optional): ")
     appointment_date = DateField('Appointment Date: ')
@@ -114,18 +128,20 @@ class ManageForm(FlaskForm):
     plus_button = SubmitField("+")
     minus_button = SubmitField("-")
     def __init__(self):
-        super(ManageForm, self).__init__()
+        super(ManageDonateForm, self).__init__()
 
-class ViewForm(FlaskForm):
+class ManageClaimForm(FlaskForm):
     header_id = HiddenField()
     beneficiary = TextField("Perferred beneficiary (Optional): ")
     appointment_date = DateField('Appointment Date: ')
     appointment_time = TimeField('Appointment Time: ')
     frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
-    notes = TextAreaField("Do you have anything specific for this donation?")
+    notes = TextAreaField("Do you have anything specific for this consumption?")
     food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
+    plus_button = SubmitField("+")
+    minus_button = SubmitField("-")
     def __init__(self):
-        super(ViewForm, self).__init__()
+        super(ManageClaimForm, self).__init__()
 
 # Below is just for testing...
 class LocationForm(FlaskForm):

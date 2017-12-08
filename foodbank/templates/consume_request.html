@@ -26,7 +26,6 @@ Dashboard
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Settings</a></li>
             <li><a href="{{ url_for('edit_profile') }}">Profile</a></li>
             <li><a href="{{ url_for('logout') }}">Log Out</a></li>
           </ul>
@@ -51,16 +50,16 @@ Dashboard
           <div class="container">
               {{ utils.flashed_messages() }}<br/>
               <form action="/consume" method="post" role="form">
-                  {{ donateForm.hidden_tag() }}
-                  {{ wtf.form_field(donateForm.donate_to) }}
-                  {{ wtf.form_field(donateForm.beneficiary) }}
-                  {{ wtf.form_field(donateForm.appointment_date) }}
-                  {{ wtf.form_field(donateForm.appointment_time) }}
-                  {{ wtf.form_field(donateForm.frequency) }}
-                  {{ wtf.form_field(donateForm.notes) }}
+                  {{ claimForm.hidden_tag() }}
+                  {{ wtf.form_field(claimForm.claim_from) }}
+                  {{ wtf.form_field(claimForm.beneficiary) }}
+                  {{ wtf.form_field(claimForm.appointment_date) }}
+                  {{ wtf.form_field(claimForm.appointment_time) }}
+                  {{ wtf.form_field(claimForm.frequency) }}
+                  {{ wtf.form_field(claimForm.notes) }}
                   <h3>Add Food Items: </h3><br/>
 
-                    {% for l in donateForm.food_items %}
+                    {% for l in claimForm.food_items %}
                     <div style="border: 1px solid green;">
                       {{ l.form.hidden_tag() }}
                       {{ wtf.form_field(l.form.category) }}
@@ -72,8 +71,8 @@ Dashboard
                       <br/>
                     {% endfor %}
 
-                  {{ donateForm.plus_button() }}
-                  {{ donateForm.minus_button() }}
+                  {{ claimForm.plus_button() }}
+                  {{ claimForm.minus_button() }}
                 <br/>
                 <input type="submit" value="Claim a consumption" />
               </form>

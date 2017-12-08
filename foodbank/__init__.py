@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from forms import LoginForm, RegisterDonorForm, RegisterConsumerForm, RegisterFoodbankForm, DonateForm, CompanyForm, \
-    ManageForm, EditDonorProfileForm, ViewForm, EditFoodbankProfileForm, EditConsumerProfileForm
+    ManageDonateForm, ManageClaimForm, EditDonorProfileForm, EditFoodbankProfileForm, EditConsumerProfileForm, ClaimForm
 from datetime import datetime
 
 
@@ -322,17 +322,17 @@ def consume():
         category_food_dict[str(category.id)] = food_items
     print '------------category_food_dict----------------'
     print category_food_dict
-    form = DonateForm(foodbank_choices=foodbanks)
-    # form = DonateForm()
+    form = ClaimForm(foodbank_choices=foodbanks)
+    # form = ClaimForm()
     if form.plus_button.data:
         form.food_items.append_entry()
     elif form.minus_button.data:
         form.food_items.pop_entry()
     elif form.validate_on_submit():#post successfully
-        # insert the donation request into database
+        # insert the consumption request into database
         new_request_header = RequestHeader(
             from_user = current_user.id,
-            to_user = int(form.donate_to.data),
+            to_user = int(form.claim_from.data),
             appointment_date = form.appointment_date.data,
             appointment_time = form.appointment_time.data,
             request_type = REQUEST_CONSUMPTION,
@@ -359,7 +359,7 @@ def consume():
         flash("You have successfully submitted a consumption request!")
         return redirect(url_for('dashboard'))
 
-    return render_template('consume_request.html', donateForm=form, user=current_user)
+    return render_template('consume_request.html', claimForm=form, user=current_user)
 
 @app.route('/manage/donation', methods=['GET', 'POST'])
 @login_required
@@ -384,7 +384,7 @@ def manage_consumption():
 def edit_donation(donation_id):
     donation_header = db.session.query(RequestHeader).filter_by(id = donation_id).first()
     donation_detail = db.session.query(RequestDetail).filter_by(request_header_id = donation_id).all()  
-    form = ManageForm()
+    form = ManageDonateForm()
     if request.method == 'POST':
         if form.plus_button.data:
             form.food_items.append_entry()
@@ -463,7 +463,83 @@ def edit_donation(donation_id):
 @app.route('/manage/consumption/edit/<consumption_id>', methods=['GET', 'POST'])
 @login_required
 def edit_consumption(consumption_id):
-    pass
+    consumption_header = db.session.query(RequestHeader).filter_by(id = consumption_id).first()
+    consumption_detail = db.session.query(RequestDetail).filter_by(request_header_id = consumption_id).all()  
+    form = ManageClaimForm()
+    if request.method == 'POST':
+        if form.plus_button.data:
+            form.food_items.append_entry()
+        elif form.minus_button.data:
+            form.food_items.pop_entry()
+        elif form.validate_on_submit():
+            if request.form['submit'] == 'Update':
+                consumption_header.beneficiary = form.beneficiary.data
+                consumption_header.appointment_date = form.appointment_date.data
+                consumption_header.appointment_time = form.appointment_time.data
+                consumption_header.frequency = form.frequency.data
+                consumption_header.notes = form.notes.data
+                db.session.query(RequestDetail).filter_by(request_header_id = consumption_id).delete()
+                for entry in form.food_items.entries:
+                    new_request_detail = RequestDetail(
+                        request_header_id=consumption_id,
+                        food_item_id=entry.data['food_item'],
+                        category_id=entry.data['category'],
+                        quantity=entry.data['quantity'],
+                        weight=entry.data['weight'],
+                        expiration_date=entry.data['expiration_date']
+                    )
+                    db.session.add(new_request_detail)
+                db.session.commit()
+                flash('You have updated one request!')
+                return redirect(url_for('dashboard'))
+            elif request.form['submit'] == 'Approve':
+                consumption_header.status = REQUEST_APPROVED
+                new_transaction_header = TransactionHeader(
+                    id = consumption_id,
+                    from_user = consumption_header.from_user,
+                    to_user = consumption_header.to_user,
+                    appointment_date = form.appointment_date.data,
+                    appointment_time = form.appointment_time.data,
+                    transaction_type = REQUEST_CONSUMPTION,
+                    beneficiary = form.beneficiary.data,
+                    frequency = form.frequency.data,
+                    notes = form.notes.data)
+                db.session.add(new_transaction_header)
+                db.session.commit()
+
+                for entry in form.food_items.entries:
+                    new_transaction_detail = TransactionDetail(
+                        transaction_header_id=new_transaction_header.id,
+                        food_item_id=entry.data['food_item'],
+                        category_id=entry.data['category'],
+                        quantity=entry.data['quantity'],
+                        weight=entry.data['weight'],
+                        expiration_date=entry.data['expiration_date']
+                    )
+                    db.session.add(new_transaction_detail)
+                db.session.commit()
+                flash('You have approved one transaction!')
+                return redirect(url_for('dashboard'))
+    else:
+        form.header_id.data = consumption_header.id
+        form.beneficiary.data = consumption_header.beneficiary
+        form.appointment_date.data = consumption_header.appointment_date
+        form.appointment_time.data = consumption_header.appointment_time
+        form.frequency.choice = consumption_header.frequency
+        form.notes.data = consumption_header.notes
+        for x in range(1, len(consumption_detail)):
+            form.food_items.append_entry()
+        for x in range(0, len(consumption_detail)):
+            form.food_items.__getitem__(x).category.data = consumption_detail[x].category_id
+            form.food_items.__getitem__(x).food_item.data = consumption_detail[x].food_item_id
+            form.food_items.__getitem__(x).quantity.data = consumption_detail[x].quantity
+            form.food_items.__getitem__(x).weight.data = consumption_detail[x].weight
+            print '-----------------'
+            print type(consumption_detail[x].expiration_date)
+            print consumption_detail[x].expiration_date
+            form.food_items.__getitem__(x).expiration_date.data = \
+                datetime.strptime(consumption_detail[x].expiration_date, '%Y-%m-%d')
+    return render_template('edit_consumption.html', claimForm = form)   
 
 @app.route('/manage/donation/view/<donation_id>', methods=['GET'])
 @login_required
