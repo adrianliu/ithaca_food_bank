@@ -47,12 +47,12 @@ class User(UserMixin, db.Model):
     country = db.Column(db.String(50))
     phone = db.Column(db.String(50))
     description = db.Column(db.String(50))
-    # organization_type = db.Column(db.String(50))
     user_type = db.Column(db.Integer)
-    # pick_up_method = db.Column(db.String(50))
-    # population = db.Column(db.String(50))
-    # total_capacity = db.Column(db.String(50))
-    # current_inventory = db.Column(db.String(50))
+    organization_type = db.Column(db.String(50))
+    pick_up_method = db.Column(db.String(50))
+    population = db.Column(db.String(50))
+    total_capacity = db.Column(db.String(50))
+    current_inventory = db.Column(db.String(50))
 
 class RequestHeader(db.Model):
     __tablename__ = 'request_header'
@@ -77,6 +77,7 @@ class RequestDetail(db.Model):
     category_id = db.Column(db.Integer, ForeignKey("category.id"), nullable=False) # reference to Category(id)
     quantity = db.Column(db.String(50))
     weight = db.Column(db.String(50))
+    nutrition = db.Column(db.String(50))
     expiration_date = db.Column(db.String(50))
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -101,6 +102,7 @@ class TransactionDetail(db.Model):
     category_id = db.Column(db.Integer, ForeignKey("category.id"), nullable=False) # reference to Category(id)
     quantity = db.Column(db.String(50))
     weight = db.Column(db.String(50))
+    nutrition = db.Column(db.String(50))
     expiration_date = db.Column(db.String(50))
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -173,7 +175,12 @@ def signup_donor():
                 country = form.country.data,
                 phone = form.phone.data,
                 description = form.description.data,
-                user_type = TYPE_DONOR)
+                user_type = TYPE_DONOR,
+                organization_type = form.organization_type.data,
+                pick_up_method = form.pick_up_method.data,
+                population = form.population.data,
+                total_capacity = form.total_capacity.data,
+                current_inventory = form.current_inventory.data)
 
             # add new user to the database
             db.session.add(new_user)
@@ -208,7 +215,12 @@ def signup_consumer():
                 country = form.country.data,
                 phone = form.phone.data,
                 description = form.description.data,
-                user_type = TYPE_CONSUMER)
+                user_type = TYPE_CONSUMER,
+                organization_type = form.organization_type.data,
+                pick_up_method = form.pick_up_method.data,
+                population = form.population.data,
+                total_capacity = form.total_capacity.data,
+                current_inventory = form.current_inventory.data)
             # add new user to the database
             db.session.add(new_user)
             db.session.commit()
@@ -242,7 +254,12 @@ def signup_foodbank():
                 country = form.country.data,
                 phone = form.phone.data,
                 description = form.description.data,
-                user_type = TYPE_FOODBANK)
+                user_type = TYPE_FOODBANK,
+                organization_type = form.organization_type.data,
+                pick_up_method = form.pick_up_method.data,
+                population = form.population.data,
+                total_capacity = form.total_capacity.data,
+                current_inventory = form.current_inventory.data)
             # add new user to the database
             db.session.add(new_user)
             db.session.commit()
@@ -298,6 +315,7 @@ def donate():
                 category_id=entry.data['category'],
                 quantity=entry.data['quantity'],
                 weight=entry.data['weight'],
+                nutrition=entry.data['nutrition'],
                 expiration_date=entry.data['expiration_date']
             )
             db.session.add(new_request_detail)
@@ -351,6 +369,7 @@ def consume():
                 category_id=entry.data['category'],
                 quantity=entry.data['quantity'],
                 weight=entry.data['weight'],
+                nutrition=entry.data['nutrition'],
                 expiration_date=entry.data['expiration_date']
             )
             db.session.add(new_request_detail)
@@ -405,6 +424,7 @@ def edit_donation(donation_id):
                         category_id=entry.data['category'],
                         quantity=entry.data['quantity'],
                         weight=entry.data['weight'],
+                        nutrition=entry.data['nutrition'],
                         expiration_date=entry.data['expiration_date']
                     )
                     db.session.add(new_request_detail)
@@ -433,6 +453,7 @@ def edit_donation(donation_id):
                         category_id=entry.data['category'],
                         quantity=entry.data['quantity'],
                         weight=entry.data['weight'],
+                        nutrition=entry.data['nutrition'],
                         expiration_date=entry.data['expiration_date']
                     )
                     db.session.add(new_transaction_detail)
@@ -453,6 +474,7 @@ def edit_donation(donation_id):
             form.food_items.__getitem__(x).food_item.data = donation_detail[x].food_item_id
             form.food_items.__getitem__(x).quantity.data = donation_detail[x].quantity
             form.food_items.__getitem__(x).weight.data = donation_detail[x].weight
+            form.food_items.__getitem__(x).nutrition.data = donation_detail[x].nutrition
             print '-----------------'
             print type(donation_detail[x].expiration_date)
             print donation_detail[x].expiration_date
@@ -486,6 +508,7 @@ def edit_consumption(consumption_id):
                         category_id=entry.data['category'],
                         quantity=entry.data['quantity'],
                         weight=entry.data['weight'],
+                        nutrition=entry.data['nutrition'],
                         expiration_date=entry.data['expiration_date']
                     )
                     db.session.add(new_request_detail)
@@ -514,6 +537,7 @@ def edit_consumption(consumption_id):
                         category_id=entry.data['category'],
                         quantity=entry.data['quantity'],
                         weight=entry.data['weight'],
+                        nutrition=entry.data['nutrition'],
                         expiration_date=entry.data['expiration_date']
                     )
                     db.session.add(new_transaction_detail)
@@ -534,6 +558,7 @@ def edit_consumption(consumption_id):
             form.food_items.__getitem__(x).food_item.data = consumption_detail[x].food_item_id
             form.food_items.__getitem__(x).quantity.data = consumption_detail[x].quantity
             form.food_items.__getitem__(x).weight.data = consumption_detail[x].weight
+            form.food_items.__getitem__(x).nutrition.data = consumption_detail[x].nutrition
             print '-----------------'
             print type(consumption_detail[x].expiration_date)
             print consumption_detail[x].expiration_date
@@ -605,6 +630,11 @@ def edit_profile():
         user.country = form.country.data
         user.phone = form.phone.data
         user.description = form.description.data
+        user.organization_type = form.organization_type.data
+        user.pick_up_method = form.pick_up_method.data
+        user.population = form.population.data
+        user.total_capacity = form.total_capacity.data
+        user.current_inventory = form.current_inventory.data
         db.session.commit()
         flash('Your profile has been updated!')
         return redirect(url_for('dashboard'))
@@ -617,6 +647,11 @@ def edit_profile():
         form.country.data = user.country
         form.phone.data = user.phone
         form.description.data = user.description
+        form.organization_type.data = user.organization_type
+        form.pick_up_method.data = user.pick_up_method
+        form.population.data = user.population
+        form.total_capacity.data = user.total_capacity
+        form.current_inventory.data = user.current_inventory
     if user.user_type == TYPE_FOODBANK:
         return render_template('edit_profile_foodbank.html', form=form)
     elif user.user_type == TYPE_CONSUMER:

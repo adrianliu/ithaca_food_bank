@@ -21,6 +21,11 @@ class RegisterDonorForm(FlaskForm):
     country = StringField('country')
     phone = StringField('phone number')
     description = StringField('description')
+    organization_type = StringField('organization type')
+    pick_up_method = StringField('pick up method')
+    population = StringField('population')
+    total_capacity = StringField('total capacity')
+    current_inventory = StringField('current inventory')
     #add app.config['RECAPTCHA_PUBLIC_KEY'] app.config['RECAPTCHA_PRIVATE_KEY']
     # do not forget to add {{ form.recaptcha }} in templates
     #recaptcha = RecaptchaFeild()
@@ -34,6 +39,11 @@ class EditDonorProfileForm(FlaskForm):
     country = StringField('country')
     phone = StringField('phone number')
     description = StringField('description')
+    organization_type = StringField('organization type')
+    pick_up_method = StringField('pick up method')
+    population = StringField('population')
+    total_capacity = StringField('total capacity')
+    current_inventory = StringField('current inventory')
 
 class RegisterConsumerForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
@@ -46,6 +56,11 @@ class RegisterConsumerForm(FlaskForm):
     country = StringField('country')
     phone = StringField('phone number')
     description = StringField('description')
+    organization_type = StringField('organization type')
+    pick_up_method = StringField('pick up method')
+    population = StringField('population')
+    total_capacity = StringField('total capacity')
+    current_inventory = StringField('current inventory')
 
 class EditConsumerProfileForm(FlaskForm):
     name = StringField('name')
@@ -56,6 +71,11 @@ class EditConsumerProfileForm(FlaskForm):
     country = StringField('country')
     phone = StringField('phone number')
     description = StringField('description')
+    organization_type = StringField('organization type')
+    pick_up_method = StringField('pick up method')
+    population = StringField('population')
+    total_capacity = StringField('total capacity')
+    current_inventory = StringField('current inventory')
 
 class RegisterFoodbankForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
@@ -68,6 +88,11 @@ class RegisterFoodbankForm(FlaskForm):
     country = StringField('country')
     phone = StringField('phone number')
     description = StringField('description')
+    organization_type = StringField('organization type')
+    pick_up_method = StringField('pick up method')
+    population = StringField('population')
+    total_capacity = StringField('total capacity')
+    current_inventory = StringField('current inventory')
 
 class EditFoodbankProfileForm(FlaskForm):
     name = StringField('name')
@@ -78,7 +103,12 @@ class EditFoodbankProfileForm(FlaskForm):
     country = StringField('country')
     phone = StringField('phone number')
     description = StringField('description')
-
+    organization_type = StringField('organization type')
+    pick_up_method = StringField('pick up method')
+    population = StringField('population')
+    total_capacity = StringField('total capacity')
+    current_inventory = StringField('current inventory')
+    
 # this is a subform for users to input food item information, can be used for DonateForm
 class CategoryFoodForm(FlaskForm):
     category = SelectField('Select a category: ', choices=[('1', 'Category1'), ('2', 'Category2')])
@@ -86,7 +116,8 @@ class CategoryFoodForm(FlaskForm):
                             choices=[('1', 'foodItem1'), ('2', 'foodItem2'),
                                      ('3', 'foodItem3'), ('4', 'foodItem4'),('5', 'foodItem5'), ('6', 'foodItem6')])
     quantity = StringField("Quantity: ")
-    weight = StringField("weight: ")
+    weight = StringField("Weight: ")
+    nutrition = StringField("Nutrition: ")
     expiration_date = DateField('Expiration Date: ')
 
 class DonateForm(FlaskForm):
