@@ -610,6 +610,15 @@ def foodbank_locator():
     else:
         return render_template('foodbank_locator_donor.html', user=user, foodbanks=foodbanks)
 
+@app.route('/foodbank_locator/view/<foodbank_id>', methods=['GET'])
+@login_required
+def view_foodbank(foodbank_id):
+    user = current_user
+    foodbank = db.session.query(User).filter_by(id = foodbank_id).first()  
+    if user.user_type == TYPE_CONSUMER:
+        return render_template('view_foodbank_consumer.html', foodbank=foodbank)
+    else:
+        return render_template('view_foodbank_donor.html', foodbank=foodbank)    
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required

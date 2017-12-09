@@ -1,0 +1,123 @@
+{% import "bootstrap/utils.html" as utils %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{url_for('.static', filename='dashboard.css')}}">
+{% endblock %}
+
+<!-- {% block scripts %}
+{{super()}}
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script>
+  $(function() {
+    $( ".dtpick" ).datepicker();
+  });
+</script>
+{% endblock %} -->
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Ithaca Food Bank</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{ url_for('edit_profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('donate') }}">Claim a consumption</a></li>
+            <li class="active"><a href="{{ url_for('foodbank_locator') }}">Foodbank Locator<span class="sr-only">(current)</span></a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <div class="container">
+              <table class="table table-striped table-hover table-bordered">
+                <tr>
+                  <th>Food Bank name</th>
+                  <th>{{ foodbank.name }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank email</th>
+                  <th>{{ foodbank.email }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank address</th>
+                  <th>{{ foodbank.address }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank zip code</th>
+                  <th>{{ foodbank.zip_code }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank city</th>
+                  <th>{{ foodbank.city }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank state</th>
+                  <th>{{ foodbank.state }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank country</th>
+                  <th>{{ foodbank.country }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank phone</th>
+                  <th>{{ foodbank.phone }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank description</th>
+                  <th>{{ foodbank.description }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank organization type</th>
+                  <th>{{ foodbank.organization_type }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank pick up method</th>
+                  <th>{{ foodbank.pick_up_method }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank population</th>
+                  <th>{{ foodbank.population }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank total capacity</th>
+                  <th>{{ foodbank.total_capacity }}</th>
+                </tr>
+                <tr>
+                  <th>Food Bank current inventory</th>
+                  <th>{{ foodbank.current_inventory }}</th>
+                </tr>
+              </table>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
