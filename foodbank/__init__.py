@@ -405,11 +405,7 @@ def edit_donation(donation_id):
     donation_detail = db.session.query(RequestDetail).filter_by(request_header_id = donation_id).all()  
     form = ManageDonateForm()
     if request.method == 'POST':
-        if form.plus_button.data:
-            form.food_items.append_entry()
-        elif form.minus_button.data:
-            form.food_items.pop_entry()
-        elif form.validate_on_submit():
+        if form.validate_on_submit():
             if request.form['submit'] == 'Update':
                 donation_header.beneficiary = form.beneficiary.data
                 donation_header.appointment_date = form.appointment_date.data
@@ -489,11 +485,7 @@ def edit_consumption(consumption_id):
     consumption_detail = db.session.query(RequestDetail).filter_by(request_header_id = consumption_id).all()  
     form = ManageClaimForm()
     if request.method == 'POST':
-        if form.plus_button.data:
-            form.food_items.append_entry()
-        elif form.minus_button.data:
-            form.food_items.pop_entry()
-        elif form.validate_on_submit():
+        if form.validate_on_submit():
             if request.form['submit'] == 'Update':
                 consumption_header.beneficiary = form.beneficiary.data
                 consumption_header.appointment_date = form.appointment_date.data

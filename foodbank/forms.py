@@ -156,8 +156,6 @@ class ManageDonateForm(FlaskForm):
     frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
     notes = TextAreaField("Do you have anything specific for this donation?")
     food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
-    plus_button = SubmitField("+")
-    minus_button = SubmitField("-")
     def __init__(self):
         super(ManageDonateForm, self).__init__()
 
@@ -169,8 +167,6 @@ class ManageClaimForm(FlaskForm):
     frequency = SelectField('Frequency: ', choices=[('1', 'One Time'), ('2', 'Weekly'), ('3', 'Monthly')])
     notes = TextAreaField("Do you have anything specific for this consumption?")
     food_items = FieldList(FormField(CategoryFoodForm), min_entries=1) # subform for Category-Food
-    plus_button = SubmitField("+")
-    minus_button = SubmitField("-")
     def __init__(self):
         super(ManageClaimForm, self).__init__()
 
